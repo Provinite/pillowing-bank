@@ -1,0 +1,19 @@
+.top-bar {
+    background-color:#272932;
+    padding: 0;
+}
+
+.button {
+    background-color: #272932;
+}
+
+.logo.show-for-large img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+}
+
+.top-bar .button-group {
+    margin-bottom: 0;
+}
