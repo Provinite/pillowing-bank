@@ -13,10 +13,10 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'war'
+apply plugin: 'jar'
 
-war {
-	baseName = 'pillowing-bank'
+jar {
+	baseName = 'target-pillowing-bank'
 	version = '0.0.1-SNAPSHOT'
 }
 
