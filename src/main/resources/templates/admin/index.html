@@ -5,9 +5,11 @@
     <title>Pillowing Bank - Admin</title>
 </head>
 <body>
-<th:block th:replace="partials/header :: topbar('Pillowing Bank - Admin', true)" />
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - Admin', true, 'admin')" />
 <div class="row">
     <div class="small-12 column">
+        <p>Welcome to the Pillowing Bank admin section. Here you can manage clients, their inventories, and audit logs.</p>
+        <p>If you run into any issues, please let Prov know so he can check it out.</p>
     </div>
 </div>
 <th:block th:replace="partials/footer :: footer" />

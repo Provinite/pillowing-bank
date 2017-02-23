@@ -5,11 +5,11 @@
     <title>Pillowing Bank - Login</title>
 </head>
 <body>
-    <th:block th:replace="partials/header :: topbar('Pillowing Bank - Login', false)" />
+    <th:block th:replace="partials/header :: topbar('Pillowing Bank - Login', false, 'login')" />
     <div class="row">
         <div class="small-4 small-centered column">
             <form th:action="@{/login}" method="POST">
-                <input type="text" id="email" name="email"  th:placeholder="Email"/> <br/>
+                <input type="text" id="email" name="email"  th:placeholder="Email" data-focus="true"/> <br/>
                 <input type="password"  th:placeholder="Password" id="password" name="password"/> <br />
                 <input type="submit" class="button expanded" value="Log In" />
                 <div align="center" th:if="${param.error}">

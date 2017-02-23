@@ -13,7 +13,7 @@
     </th:block>
 </head>
 <body>
-<th:block th:fragment="topbar(title, adminNav)">
+<th:block th:fragment="topbar(title, adminNav, activePage)">
     <div class="top-bar">
         <div class="top-bar-left">
             <div class="menu-text logo show-for-large">
@@ -35,10 +35,11 @@
         <h1 th:text="${title}">Hero Bar Title</h1>
         <th:block th:if="${adminNav} ?: false">
             <ul class="nav">
-                <li><a href="">Clients</a></li>
-                <li><a href="">Staff</a></li>
-                <li><a href="">Items</a></li>
-                <li><a href="">Audit</a></li>
+                <li><a th:href="@{/admin/}" th:class="${activePage == 'admin' ? 'is-active' : ''}">Admin</a></li>
+                <li><a th:href="@{/admin/client}" th:class="${activePage == 'client' ? 'is-active' : ''}">Clients</a></li>
+                <li><a th:href="@{/admin/staff}" th:class="${activePage == 'staff' ? 'is-active' : ''}">Staff</a></li>
+                <li><a th:href="@{/admin/item}" th:class="${activePage == 'item' ? 'is-active' : ''}">Items</a></li>
+                <li><a th:href="@{/admin/audit}" th:class="${activePage == 'audit' ? 'is-active' : ''}">Audit</a></li>
             </ul>
         </th:block>
     </div>

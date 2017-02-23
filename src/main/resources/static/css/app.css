@@ -62,7 +62,7 @@
     text-transform: uppercase;
 }
 
-.herobar ul.nav li a:hover {
+.herobar ul.nav li a:hover, .herobar ul.nav li a.is-active {
     background: rgba(255,255,255,0.15);
     transition: all .25s ease-in-out;
 }
