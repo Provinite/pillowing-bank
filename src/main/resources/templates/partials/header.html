@@ -13,14 +13,14 @@
     </th:block>
 </head>
 <body>
-<th:block th:fragment="topbar">
+<th:block th:fragment="topbar(title)">
     <div class="top-bar">
         <div class="top-bar-left">
             <div class="menu-text logo show-for-large">
-                <a href="/"><img alt="Clover Coin Designs" src="/img/banner_cc_9.png" /></a>
+                <a href="/"><img alt="Clover Coin Designs" th:src="@{/img/banner_cc_9.png}" /></a>
             </div>
             <div class="logo show-for-small hide-for-large text-center">
-                <a href="/"><img alt="Clover Coin Designs" src="/img/banner_cc_small.png" /></a>
+                <a href="/"><img alt="Clover Coin Designs" th:src="@{/img/banner_cc_small.png}" /></a>
             </div>
         </div>
         <div class="top-bar-right">
@@ -30,6 +30,9 @@
                 <a href="./contact.html" class="button">Contact AJ</a>
             </div>
         </div>
+    </div>
+    <div class="herobar">
+        <h1 th:text="${title}">Hero Bar Title</h1>
     </div>
 </th:block>
 </body>
