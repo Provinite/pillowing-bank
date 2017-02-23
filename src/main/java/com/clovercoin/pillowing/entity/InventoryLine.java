@@ -17,7 +17,7 @@ public class InventoryLine {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "client")
-    private Client user;
+    private Client client;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "item")
