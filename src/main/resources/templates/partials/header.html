@@ -13,7 +13,7 @@
     </th:block>
 </head>
 <body>
-<th:block th:fragment="topbar(title)">
+<th:block th:fragment="topbar(title, adminNav)">
     <div class="top-bar">
         <div class="top-bar-left">
             <div class="menu-text logo show-for-large">
@@ -31,8 +31,16 @@
             </div>
         </div>
     </div>
-    <div class="herobar">
+    <div th:class="'herobar' + (${adminNav} ? ' withnav' : '')">
         <h1 th:text="${title}">Hero Bar Title</h1>
+        <th:block th:if="${adminNav} ?: false">
+            <ul class="nav">
+                <li><a href="">Clients</a></li>
+                <li><a href="">Staff</a></li>
+                <li><a href="">Items</a></li>
+                <li><a href="">Audit</a></li>
+            </ul>
+        </th:block>
     </div>
 </th:block>
 </body>
