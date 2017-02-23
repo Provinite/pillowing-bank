@@ -2,20 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:replace="partials/header :: includes" />
+    <title>Pillowing Bank - Login</title>
 </head>
 <body>
     <th:block th:replace="partials/header :: topbar('Pillowing Bank - Login')" />
     <div class="row">
-        <div class="small-centered column">
-            <h1>Pillowing Bank - Login</h1>
-        </div>
         <div class="small-4 small-centered column">
             <form th:action="@{/login}" method="POST">
-                <input type="text" id="email" name="email"  th:placeholder="Email"
-                       class="form-control" /> <br/>
-                <input type="password"  th:placeholder="Password"
-                       id="password" name="password" class="form-control" /> <br />
-                <input type="submit" class="button" value="Submit" />
+                <input type="text" id="email" name="email"  th:placeholder="Email"/> <br/>
+                <input type="password"  th:placeholder="Password" id="password" name="password"/> <br />
+                <input type="submit" class="button expanded" value="Log In" />
                 <div align="center" th:if="${param.error}">
                     <p style="font-size: 20px; color: #FF1C19;">Email or Password invalid, please verify</p>
                 </div>
