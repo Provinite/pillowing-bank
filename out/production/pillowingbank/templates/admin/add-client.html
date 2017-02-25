@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="partials/header :: includes" />
+    <title>Pillowing Bank - Add Client</title>
+</head>
+<body>
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - Add Client', true, 'client')" />
+<div class="row">
+    <div class="small-5 small-centered column">
+        <span th:text="${__${@constantService.get('MODEL_KEY_ACTION')}__}"></span>
+        <form th:action="@{/admin/client}" th:object="${client}" method="post">
+            <label for="clientName">Client Name</label>
+            <input type="text"
+                   id="clientName"
+                   th:field="*{name}"
+                   data-focus="true"
+                   placeholder="DeviantArt Username"/>
+
+            <input type="submit" class="button expanded" value="Create Client" />
+        </form>
+    </div>
+</div>
+<th:block th:replace="partials/footer :: footer" />
+</body>
+
+</html>

@@ -4,6 +4,8 @@ import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.InventoryLine;
 import com.clovercoin.pillowing.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -22,7 +24,13 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client saveClient(Client client) {
-        return clientRepository.save(client);
+        Client result;
+        try {
+            result = clientRepository.save(client);
+        } catch (DataIntegrityViolationException dive) {
+            throw new DuplicateKeyException("A client with the given name already exists");
+        }
+        return result;
     }
 
     @Override
