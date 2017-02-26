@@ -3,14 +3,17 @@ package com.clovercoin.pillowing.service;
 import com.clovercoin.pillowing.SecurityConfiguration;
 import com.clovercoin.pillowing.entity.Role;
 import com.clovercoin.pillowing.entity.User;
+import com.clovercoin.pillowing.forms.UserAddForm;
 import com.clovercoin.pillowing.repository.RoleRepository;
 import com.clovercoin.pillowing.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.HashSet;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,19 +39,85 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        Assert.notNull(user, "Cannot create null user.");
         user.setActive(1);
-        return userRepository.save(user);
+        return this.saveUser(user, true);
     }
 
     @Override
-    public void addAdminRole(User user) {
-        Role userRole = roleRepository.findByRole(SecurityConfiguration.ADMIN_ROLE);
-        HashSet<Role> roles = new HashSet<>();
-        if (user.getRoles() != null) {
-            roles.addAll(user.getRoles());
+    public User addRole(User user, String role) {
+        Assert.notNull(user, "Cannot add role: " + role + " to null user.");
+        Assert.notNull(role, "Cannot add null role to user.");
+
+        Role userRole = roleRepository.findByRole(role);
+        if (userRole == null) {
+            throw new NoSuchRoleException(role);
         }
-        roles.add(userRole);
-        user.setRoles(roles);
+
+        Set<Role> userRoles = user.getRoles();
+        if (userRoles == null) {
+            userRoles = new HashSet<>();
+            user.setRoles(userRoles);
+        }
+        try {
+            userRoles.add(userRole);
+        } catch (UnsupportedOperationException ue) {
+            Set<Role> newRoles = new HashSet<>();
+            newRoles.addAll(userRoles);
+            newRoles.add(userRole);
+            user.setRoles(newRoles);
+        }
+
+        return user;
+    }
+
+    @Override
+    public User saveUser(User user, boolean changedPassword) {
+        Assert.notNull(user, "Cannot save null user.");
+        if (changedPassword) {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        }
+        try {
+            user = userRepository.save(user);
+            return user;
+        } catch (DataIntegrityViolationException dive) {
+            throw new DuplicateKeyException("A user with the given username or email already exists.", dive);
+        }
+    }
+
+    @Override
+    public User createUserFromForm(UserAddForm form) {
+        User user = new User();
+        user.setEmail(form.getEmail());
+        user.setPassword(form.getPassword());
+        user.setUsername(form.getUsername());
+        user.setActive(form.getIsActive() ? 1 : 0);
+
+        if (form.getIsAdmin()) {
+            this.addRole(user, SecurityConfiguration.ADMIN_ROLE);
+        }
+        if (form.getIsMod()) {
+            this.addRole(user, SecurityConfiguration.MOD_ROLE);
+        }
+        if (form.getIsGuestArtist()) {
+            this.addRole(user, SecurityConfiguration.GUEST_ARTIST_ROLE);
+        }
+
+        return user;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        List<User> result = new ArrayList<>();
+        userRepository.findAll().forEach(result::add);
+        return result;
+    }
+
+    @Override
+    public Boolean userHasRole(User user, String role) {
+        if (user.getRoles() == null || user.getRoles().isEmpty())
+            return false;
+
+        return user.getRoles().stream().map(Role::getRole).anyMatch(r -> r.equals(role));
     }
 }

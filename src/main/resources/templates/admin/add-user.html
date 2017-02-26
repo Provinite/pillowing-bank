@@ -7,27 +7,27 @@
 <body th:inline="text">
 <th:block th:replace="partials/header :: topbar('Pillowing Bank - Add Staff', true, 'user')" />
 <div class="row">
-    <div class="small-5 small-centered column">
+    <div class="small-7 small-centered column">
         <th:block th:if="${__${ACTION}__} eq ${@constantService.get('ACTION_ADD_SUBMIT')}">
 
             <div class="callout success" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_SUCCESS')}">
-
+                Successfully added user [[${user_username}]] with email address [[${user_email}]].
             </div>
 
             <div class="callout alert" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_FAILURE')}">
 
                 <th:block th:if="${__${ERROR}__} eq ${@constantService.get('ERROR_DUPLICATE_KEY')}">
-
+                    A staff member with the given name or email address already exists.
                 </th:block>
 
                 <th:block th:if="${__${ERROR}__} eq ${@constantService.get('ERROR_UNKNOWN')}">
-                    An unknown errorCode has occurred.
+                    An unknown error has occurred.
                 </th:block>
 
             </div>
 
         </th:block>
-        <form th:action="@{/admin/user}" th:object="${user}" method="post">
+        <form th:action="@{/admin/user/add}" th:object="${userForm}" method="post">
             <label for="username">Name</label>
             <input type="text"
                    id="username"
@@ -46,12 +46,17 @@
                    id="userPassword"
                    th:field="*{password}"
                    placeholder="Password"/>
-
+            <fieldset>
+                <legend>Roles</legend>
+                <input type="checkbox" id="role_admin" th:field="*{isAdmin}" /><label for="role_admin">Admin</label>
+                <input type="checkbox" id="role_mod" th:field="*{isMod}" /><label for="role_mod">Moderator</label>
+                <input type="checkbox" id="role_guest" th:field="*{isGuestArtist}" /><label for="role_guest">Guest Artist</label>
+            </fieldset>
+            <input type="hidden" th:field="*{isActive}" />
             <input type="submit" class="button expanded" value="Create Staff Member" />
         </form>
     </div>
 </div>
 <th:block th:replace="partials/footer :: footer" />
 </body>
-
 </html>

@@ -12,7 +12,7 @@
                 <input type="text" id="email" name="email"  th:placeholder="Email" data-focus="true"/> <br/>
                 <input type="password"  th:placeholder="Password" id="password" name="password"/> <br />
                 <input type="submit" class="button expanded" value="Log In" />
-                <div align="center" th:if="${param.error}">
+                <div align="center" th:if="${param.errorCode}">
                     <p style="font-size: 20px; color: #FF1C19;">Email or Password invalid, please verify</p>
                 </div>
             </form>

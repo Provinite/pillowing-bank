@@ -1,7 +1,16 @@
 package com.clovercoin.pillowing.forms;
 
-/**
- * Created by Prov on 2/25/2017.
- */
+import lombok.Data;
+
+@Data
 public class UserAddForm {
+    private String email;
+    private String username;
+    private String password;
+
+    private Boolean isActive = true;
+
+    private Boolean isAdmin;
+    private Boolean isMod;
+    private Boolean isGuestArtist;
 }

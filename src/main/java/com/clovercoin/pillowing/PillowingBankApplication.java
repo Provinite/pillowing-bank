@@ -75,7 +75,7 @@ public class PillowingBankApplication {
 			user.setEmail(adminEmail);
 			user.setUsername("CCAdmin");
 			user.setPassword(adminPassword);
-			userService.addAdminRole(user);
+			userService.addRole(user, SecurityConfiguration.ADMIN_ROLE);
 			userService.createUser(user);
 		}
 

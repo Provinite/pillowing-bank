@@ -3,7 +3,7 @@
 <head>
     <th:block th:fragment="includes">
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/6.3.0/css/foundation.min.css" />
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/6.3.0/css/foundation.min.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
         <link rel="stylesheet" th:href="@{/css/app.css}" />
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/what-input/4.0.6/what-input.min.js"></script>
@@ -36,9 +36,9 @@
         <th:block th:if="${adminNav} ?: false">
             <ul class="nav">
                 <li><a th:href="@{/admin/}" th:class="${activePage == 'admin' ? 'is-active' : ''}">Admin</a></li>
-                <li><a th:href="@{/admin/client}" th:class="${activePage == 'client' ? 'is-active' : ''}">Clients</a></li>
-                <li><a th:href="@{/admin/user}" th:class="${activePage == 'user' ? 'is-active' : ''}">Staff</a></li>
-                <li><a th:href="@{/admin/item}" th:class="${activePage == 'item' ? 'is-active' : ''}">Items</a></li>
+                <li><a th:href="@{/admin/clients}" th:class="${activePage == 'client' ? 'is-active' : ''}">Clients</a></li>
+                <li><a th:href="@{/admin/users}" th:class="${activePage == 'user' ? 'is-active' : ''}">Staff</a></li>
+                <li><a th:href="@{/admin/items}" th:class="${activePage == 'item' ? 'is-active' : ''}">Items</a></li>
                 <li><a th:href="@{/admin/audit}" th:class="${activePage == 'audit' ? 'is-active' : ''}">Audit</a></li>
             </ul>
         </th:block>

@@ -2,22 +2,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:replace="partials/header :: includes" />
-    <title>Pillowing Bank - Add Client</title>
+    <title>Pillowing Bank - Add Staff</title>
 </head>
 <body th:inline="text">
-<th:block th:replace="partials/header :: topbar('Pillowing Bank - Add Client', true, 'client')" />
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - Add Staff', true, 'user')" />
 <div class="row">
-    <div class="small-7 small-centered column">
+    <div class="small-5 small-centered column">
         <th:block th:if="${__${ACTION}__} eq ${@constantService.get('ACTION_ADD_SUBMIT')}">
 
             <div class="callout success" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_SUCCESS')}">
-                Successfully added client with name [[${client_name}]]!
+
             </div>
 
             <div class="callout alert" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_FAILURE')}">
 
                 <th:block th:if="${__${ERROR}__} eq ${@constantService.get('ERROR_DUPLICATE_KEY')}">
-                    A client with the name [[${client_name}]] already exists.
+
                 </th:block>
 
                 <th:block th:if="${__${ERROR}__} eq ${@constantService.get('ERROR_UNKNOWN')}">
@@ -27,15 +27,27 @@
             </div>
 
         </th:block>
-        <form th:action="@{/admin/client}" th:object="${client}" method="post">
-            <label for="clientName">Client Name</label>
+        <form th:action="@{/admin/user}" th:object="${user}" method="post">
+            <label for="username">Name</label>
             <input type="text"
-                   id="clientName"
-                   th:field="*{name}"
+                   id="username"
+                   th:field="*{username}"
                    data-focus="true"
-                   placeholder="DeviantArt Username"/>
+                   placeholder="Username"/>
 
-            <input type="submit" class="button expanded" value="Create Client" />
+            <label for="userEmail">Email</label>
+            <input type="text"
+                   id="userEmail"
+                   th:field="*{email}"
+                   placeholder="somebody@somewhere.com"/>
+
+            <label for="userPassword">Password</label>
+            <input type="password"
+                   id="userPassword"
+                   th:field="*{password}"
+                   placeholder="Password"/>
+
+            <input type="submit" class="button expanded" value="Create Staff Member" />
         </form>
     </div>
 </div>

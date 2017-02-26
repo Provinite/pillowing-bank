@@ -31,6 +31,11 @@ public class ConstantServiceImpl implements ConstantService {
 
         constants.put("ERROR_UNKNOWN", 0);
         constants.put("ERROR_DUPLICATE_KEY", 1);
+
+        constants.put("ROLE_ADMIN", "ADMIN");
+        constants.put("ROLE_MOD", "MOD");
+        constants.put("ROLE_GUEST_ARTIST", "GUEST_ARTIST");
+        constants.put("ROLE_CLIENT", "CLIENT");
     }
 
     @Override

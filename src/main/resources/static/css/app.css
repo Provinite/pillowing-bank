@@ -7,6 +7,18 @@
     background-color: #272932;
 }
 
+[type='checkbox'] + [type='hidden'][name^=_] + label, [type='radio'] + [type='hidden'][name^=_] + label {
+    display: inline-block;
+    vertical-align: baseline;
+    margin-left: 0.5rem;
+    margin-right: 1rem;
+    margin-bottom: 0;
+}
+
+[type='checkbox'] + [type='hidden'][name^=_] + label[for], [type='radio'] + [type='hidden'][name^=_] + label[for] {
+    cursor: pointer;
+}
+
 .logo.show-for-large img {
     position: absolute;
     left: 0;
@@ -36,7 +48,6 @@
     font-weight: 200;
     text-align: center;
 }
-
 
 .herobar ul.nav {
     position: absolute;
