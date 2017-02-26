@@ -25,8 +25,6 @@ public class PaginationServiceImpl implements PaginationService {
         int balancedUp = (maxNumDynamicElements - 1) / 2;
         int balancedDown = balancedUp;
 
-        System.out.println(balancedUp + " - " + balancedDown);
-
         if (balancedUp + balancedDown < maxNumDynamicElements-1) {
             balancedUp += 1;
         }
