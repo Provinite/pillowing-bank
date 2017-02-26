@@ -66,10 +66,10 @@ public class PaginationServiceImplTests {
     public void GetPaginationElements_Should_ReturnMaxElementsPagesIncludingFirstAndLastAndOneTrailingEllipsis_When_MaxElementsDoesNotSpanTotalPagesAndCurrentPageIsNearStart() {
         int numPages = 40;
         int curPage = 3;
-        int maxElements = 10;
+        int maxElements = 9;
 
         int expectedStart = 1;
-        int expectedEnd = 8;
+        int expectedEnd = 7;
 
         mockPage(page, numPages, curPage, false, false);
 

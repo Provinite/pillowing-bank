@@ -1,6 +1,5 @@
 package com.clovercoin.pillowing.service;
 
-import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +25,13 @@ public class PaginationServiceImpl implements PaginationService {
         int balancedUp = (maxNumDynamicElements - 1) / 2;
         int balancedDown = balancedUp;
 
-        if (balancedUp + balancedDown != maxNumDynamicElements) {
+        System.out.println(balancedUp + " - " + balancedDown);
+
+        if (balancedUp + balancedDown < maxNumDynamicElements-1) {
             balancedUp += 1;
         }
+
+        System.out.println(balancedUp + " - " + balancedDown);
 
         int balancedStart = page.getNumber() - balancedDown;
         int balancedEnd = page.getNumber() + balancedUp;
