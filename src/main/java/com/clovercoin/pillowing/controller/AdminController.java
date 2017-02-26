@@ -4,11 +4,12 @@ import com.clovercoin.pillowing.constant.Action;
 import com.clovercoin.pillowing.constant.ErrorCode;
 import com.clovercoin.pillowing.constant.Status;
 import com.clovercoin.pillowing.entity.Client;
+import com.clovercoin.pillowing.entity.Item;
 import com.clovercoin.pillowing.entity.User;
 import com.clovercoin.pillowing.forms.UserAddForm;
 import com.clovercoin.pillowing.service.ClientService;
 import com.clovercoin.pillowing.service.ControllerHelper;
-import com.clovercoin.pillowing.service.PaginationService;
+import com.clovercoin.pillowing.service.ItemService;
 import com.clovercoin.pillowing.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -18,10 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -33,9 +31,8 @@ public class AdminController {
     private ControllerHelper controllerHelper;
     @Autowired
     private UserService userService;
-
     @Autowired
-    private PaginationService paginationService;
+    private ItemService itemService;
 
     @RequestMapping("/")
     public String index() {
@@ -116,4 +113,20 @@ public class AdminController {
 
         return "admin/add-user";
     }
+
+    @RequestMapping(value = {"/items", "/items/{page}"}, method = RequestMethod.GET)
+    public String item(@PathVariable("page") Optional<Integer> page, Model model) {
+        Page<Item> dataPage = itemService.getPage(page.orElse(1) - 1);
+        model.addAttribute("page", page.orElse(1));
+        model.addAttribute("itemPage", dataPage);
+
+        return "admin/list-items";
+    }
+
+    @RequestMapping(value = "/item/add", method = RequestMethod.GET)
+    public String addItem(Model model) {
+        model.addAttribute("item", new Item());
+        return "admin/add-item";
+    }
+
 }

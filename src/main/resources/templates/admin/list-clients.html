@@ -9,7 +9,7 @@
 <div class="row">
     <div class="small-7 column small-centered">
         <a th:href="@{/admin/client/add}" class="button"><i class="fa fa-plus"></i> Add Client</a>
-        <table>
+        <table th:if="${clientPage.totalElements ne 0}">
             <thead>
             <tr>
                 <th>
@@ -23,7 +23,12 @@
             </tr>
             </tbody>
         </table>
-        <th:block th:replace="partials/pagination :: pagination(${clientPage}, 8, @{'/admin/clients/{page}'})" />
+        <th:block th:if="${clientPage.totalElements ne 0}">
+            <th:block th:replace="partials/pagination :: pagination(${clientPage}, 8, @{'/admin/clients/{page}'})" />
+        </th:block>
+        <div th:if="${clientPage.totalElements eq 0}" class="callout warning">
+            There are no items to display.
+        </div>
     </div>
 </div>
 <th:block th:replace="partials/footer :: footer" />
