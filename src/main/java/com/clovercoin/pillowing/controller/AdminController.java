@@ -7,8 +7,8 @@ import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.User;
 import com.clovercoin.pillowing.forms.UserAddForm;
 import com.clovercoin.pillowing.service.ClientService;
-import com.clovercoin.pillowing.service.ConstantService;
 import com.clovercoin.pillowing.service.ControllerHelper;
+import com.clovercoin.pillowing.service.PaginationService;
 import com.clovercoin.pillowing.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -32,16 +34,30 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PaginationService paginationService;
+
     @RequestMapping("/")
     public String index() {
         return "admin/index";
     }
 
     @RequestMapping(value = {"/clients", "/clients/{page}"}, method = RequestMethod.GET)
-    @ResponseBody
-    public Page<Client> client(@PathVariable("page") Optional<Integer> page, Model model) {
-        clientService.getPage(page.orElse(1));
+    public String client(@PathVariable("page") Optional<Integer> page, Model model) {
+        Page<Client> dataPage = clientService.getPage(page.orElse(1) - 1);
         model.addAttribute("page", page.orElse(1));
+        model.addAttribute("clientPage", dataPage);
+
+        return "admin/list-clients";
+    }
+
+    @RequestMapping("/foo")
+    public void foo() {
+        for (int i = 0; i < 220; i++) {
+            Client client = new Client();
+            client.setName("Dick-" + i);
+            clientService.saveClient(client);
+        }
     }
 
     @RequestMapping(value = "/client/add", method = RequestMethod.GET)

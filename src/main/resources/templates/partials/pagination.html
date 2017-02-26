@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<!-- /*
+    Given max elements m
+
+    Show first, last
+    [m-3]/2 before
+    [m-3]/2 after
+
+    Given max 10 elements
+    show first, last, 3 before, current, 4 after
+
+    if current < floor([m-3]/2)
+
+
+            pageNumber = ${page.number+1},
+            halfSize = ${T(Math).floor((maxElements -3)/2)},
+            defaultStart = ${pageNumber - halfSize},
+            start = ${defaultStart lt 2 ? 2 : defaultStart},
+            len = ${(start + maxElements - 2) gt (page.totalPages - 1) ? page.totalPages - 1 - start : maxElements - 2},
+            ellipsisBefore = ${start gt 2},
+            ellipsisAfter = ${start + len lt page.totalPages - 1},
+            len = ${((page.totalPages - 2 - start gt 2) and (len + 2 lt maxElements)) ? maxElements - 2 : len},
+            start = ${(len + start gt (page.totalPages - 2)) ? (page.totalPages - 2 - len) : start}
+
+    len = maxElements > page
+
+
+
+ */-->
+<th:block th:fragment="pagination(page, maxElements, url)">
+    <ul class="pagination text-center" role="navigation" aria-label="Pagination"
+        th:with="pageElements = ${@paginationService.getPaginationElements(page, maxElements)}">
+
+        <li th:class="${'pagination-previous' + (page.first ? ' disabled' : '')}">
+            <a th:if="${!page.first}" th:href="${#strings.replace(url, '{page}', page.number)}">Previous</a>
+            <th:block th:if="${page.first}">Previous</th:block>
+        </li>
+
+        <li th:each="pe : ${pageElements}" th:class="${(pe.ellipsis ? 'ellipsis' : '') + (pe.active ? 'current' : '')}">
+            <a th:if="${!pe.active and !pe.ellipsis}" th:href="${#strings.replace(url, '{page}', pe.index + 1)}" th:text="${pe.index + 1}"></a>
+            <th:block th:if="${pe.active and !pe.ellipsis}" th:text="${pe.index + 1}" />
+        </li>
+
+        <li th:class="${'pagination-next' + (page.last ? ' disabled' : '')}">
+            <a th:if="${!page.last}" th:href="${#strings.replace(url, '{page}', page.number + 2)}">Next</a>
+            <th:block th:if="${page.last}">Next</th:block>
+        </li>
+
+    </ul>
+</th:block>
+</body>
+</html>

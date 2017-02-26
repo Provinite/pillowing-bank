@@ -1,0 +1,31 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="partials/header :: includes" />
+    <title>Pillowing Bank - Clients</title>
+</head>
+<body th:inline="text">
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - Clients', true, 'client')" />
+<div class="row">
+    <div class="small-7 column small-centered">
+        <a th:href="@{/admin/client/add}" class="button"><i class="fa fa-plus"></i> Add Client</a>
+        <table>
+            <thead>
+            <tr>
+                <th>
+                    Client
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="client,iterationStatus : ${clientPage.content}">
+                <td th:text="${client.name}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <th:block th:replace="partials/pagination :: pagination(${clientPage}, 8, @{'/admin/clients/{page}'})" />
+    </div>
+</div>
+<th:block th:replace="partials/footer :: footer" />
+</body>
+</html>
