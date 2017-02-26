@@ -51,15 +51,6 @@ public class AdminController {
         return "admin/list-clients";
     }
 
-    @RequestMapping("/foo")
-    public void foo() {
-        for (int i = 0; i < 220; i++) {
-            Client client = new Client();
-            client.setName("Dick-" + i);
-            clientService.saveClient(client);
-        }
-    }
-
     @RequestMapping(value = "/client/add", method = RequestMethod.GET)
     public String addClient(Model model) {
         model.addAttribute("client", new Client());
