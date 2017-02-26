@@ -3,34 +3,6 @@
 <head>
 </head>
 <body>
-<!-- /*
-    Given max elements m
-
-    Show first, last
-    [m-3]/2 before
-    [m-3]/2 after
-
-    Given max 10 elements
-    show first, last, 3 before, current, 4 after
-
-    if current < floor([m-3]/2)
-
-
-            pageNumber = ${page.number+1},
-            halfSize = ${T(Math).floor((maxElements -3)/2)},
-            defaultStart = ${pageNumber - halfSize},
-            start = ${defaultStart lt 2 ? 2 : defaultStart},
-            len = ${(start + maxElements - 2) gt (page.totalPages - 1) ? page.totalPages - 1 - start : maxElements - 2},
-            ellipsisBefore = ${start gt 2},
-            ellipsisAfter = ${start + len lt page.totalPages - 1},
-            len = ${((page.totalPages - 2 - start gt 2) and (len + 2 lt maxElements)) ? maxElements - 2 : len},
-            start = ${(len + start gt (page.totalPages - 2)) ? (page.totalPages - 2 - len) : start}
-
-    len = maxElements > page
-
-
-
- */-->
 <th:block th:fragment="pagination(page, maxElements, url)">
     <ul class="pagination text-center" role="navigation" aria-label="Pagination"
         th:with="pageElements = ${@paginationService.getPaginationElements(page, maxElements)}">
