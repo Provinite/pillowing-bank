@@ -4,11 +4,18 @@
     <th:block th:replace="partials/header :: includes" />
     <title>Pillowing Bank - Client</title>
     <script type="text/javascript">
+        /*<![CDATA[*/
         $(document).ready(function() {
             $('tr.data-line').editTable(function(rowId,newValues,oldValues) {
+                if (newValues.quantity < 0)
+                    return oldValues;
+                if (newValues.quantity == 0)
+                    $("tr[data-te-row-id='" + rowId + "']").remove();
                 return newValues;
             });
         });
+        /*]]>*/
+
     </script>
 </head>
 <body th:inline="text">
