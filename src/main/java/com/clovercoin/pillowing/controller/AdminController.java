@@ -126,6 +126,27 @@ public class AdminController {
     @RequestMapping(value = "/item/add", method = RequestMethod.GET)
     public String addItem(Model model) {
         model.addAttribute("item", new Item());
+        controllerHelper.setAction(model, Action.ADD);
+        return "admin/add-item";
+    }
+
+    @RequestMapping(value = "/item/add", method = RequestMethod.POST)
+    public String addItem(Model model, Item item) {
+        model.addAttribute("item_name", item.getName());
+        controllerHelper.setAction(model, Action.ADD_SUBMIT);
+        try {
+            itemService.saveItem(item);
+            model.addAttribute("item", new Item());
+            model.addAttribute("item_name", item.getName());
+        } catch (DuplicateKeyException dke) {
+            controllerHelper.setStatus(model, Status.FAILURE);
+            controllerHelper.setError(model, ErrorCode.DUPLICATE_KEY);
+            model.addAttribute("item", item);
+        } catch (Exception e) {
+            controllerHelper.setStatus(model, Status.FAILURE);
+            controllerHelper.setError(model, ErrorCode.UNKNOWN);
+            model.addAttribute("item", item);
+        }
         return "admin/add-item";
     }
 

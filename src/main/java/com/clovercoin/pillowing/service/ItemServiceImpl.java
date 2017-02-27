@@ -4,6 +4,8 @@ import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.Item;
 import com.clovercoin.pillowing.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +31,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item saveItem(Item item) {
-        return itemRepository.save(item);
+        try {
+            return itemRepository.save(item);
+        } catch (DataIntegrityViolationException dive) {
+            throw new DuplicateKeyException("An item with the given name already exists");
+        }
     }
 
     @Override

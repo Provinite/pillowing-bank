@@ -8,7 +8,7 @@
 <th:block th:replace="partials/header :: topbar('Pillowing Bank - Items', true, 'item')" />
 <div class="row">
     <div class="small-7 column small-centered">
-        <a th:href="@{/admin/items/add}" class="button"><i class="fa fa-plus"></i> Add Item</a>
+        <a th:href="@{/admin/item/add}" class="button"><i class="fa fa-plus"></i> Add Item</a>
         <table th:if="${itemPage.totalElements ne 0}">
             <thead>
             <tr>
