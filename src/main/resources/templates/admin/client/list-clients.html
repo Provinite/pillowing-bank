@@ -19,7 +19,7 @@
             </thead>
             <tbody>
             <tr th:each="client,iterationStatus : ${clientPage.content}">
-                <td th:text="${client.name}"></td>
+                <td><a th:text="${client.name}" th:href="@{/admin/client/{id}(id=${client.id})}"></a></td>
             </tr>
             </tbody>
         </table>

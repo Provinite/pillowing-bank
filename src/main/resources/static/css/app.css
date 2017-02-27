@@ -108,3 +108,20 @@
     margin-top: 2.5rem;
     margin-bottom: 10px;
 }
+
+.display-none {
+    display: none;
+}
+
+td input, td input[type='text'], td .button {
+    margin: 0;
+}
+
+td input[type='text'] {
+    padding: 0.75rem;
+    height: 1rem;
+}
+
+td.text-right input[type='text'] {
+    text-align:right;
+}

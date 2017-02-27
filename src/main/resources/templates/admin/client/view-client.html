@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="partials/header :: includes" />
+    <title>Pillowing Bank - Client</title>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('tr.data-line').editTable(function(rowId,newValues,oldValues) {
+                return newValues;
+            });
+        });
+    </script>
+</head>
+<body th:inline="text">
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - Client', true, 'client')" />
+<div class="row">
+    <div class="small-7 column small-centered">
+        <p class="lead">Viewing details of [[${client.name}]]</p>
+        <table th:if="${inventoryPage.totalElements ne 0}">
+            <thead>
+            <tr>
+                <th width="60%">
+                    Item
+                </th>
+                <th class="text-right" width="20%">
+                    Quantity
+                </th>
+                <th class="text-right" width="20%">
+                    Edit
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="inventoryLine,iterationStatus : ${inventoryPage.content}" class="data-line" th:attr="data-te-row-id=${inventoryLine.id}">
+                <td th:text="${inventoryLine.item.name}"></td>
+                <td class="text-right" data-te-role="value"
+                    data-te-attribute="quantity"
+                    th:attr="data-te-value=${inventoryLine.quantity}"
+                    th:text="${inventoryLine.quantity}">
+                </td>
+                <td class="text-right" data-te-role="actions">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <th:block th:if="${inventoryPage.totalElements ne 0}">
+            <th:block th:replace="partials/pagination :: pagination(${inventoryPage}, 8, @{'./{page}'})" />
+        </th:block>
+        <div th:if="${inventoryPage.totalElements eq 0}" class="callout warning">
+            There is no inventory to display.
+        </div>
+    </div>
+</div>
+<th:block th:replace="partials/footer :: footer" />
+</body>
+</html>

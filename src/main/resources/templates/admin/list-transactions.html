@@ -1,0 +1,36 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="partials/header :: includes" />
+    <title>Pillowing Bank - Transactions</title>
+</head>
+<body th:inline="text">
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - Transactions', true, 'audit')" />
+<div class="row">
+    <div class="small-7 column small-centered">
+        <a th:href="@{/admin/transaction/add}" class="button"><i class="fa fa-plus"></i> Add Transaction</a>
+        <table th:if="${transactionPage.totalElements ne 0}">
+            <thead>
+            <tr>
+                <th>
+                    Client
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="transaction,iterationStatus : ${transactionPage.content}">
+                <td th:text="${transaction.name}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <th:block th:if="${transactionPage.totalElements ne 0}">
+            <th:block th:replace="partials/pagination :: pagination(${transactionPage}, 8, @{'/admin/transactions/{page}'})" />
+        </th:block>
+        <div th:if="${transactionPage.totalElements eq 0}" class="callout warning">
+            There are no items to display.
+        </div>
+    </div>
+</div>
+<th:block th:replace="partials/footer :: footer" />
+</body>
+</html>
