@@ -64,6 +64,10 @@ $.fn.editTable = function(submitCallback) {
             textCells.push(textCell);
         });
 
+        var isPromise = function(obj) {
+            return (obj != null && typeof obj.then == 'function');
+        }
+
         var storeCellVals = function () {
             cellVals = {};
             for (var i = 0; i < textCells.length; i++)
@@ -134,13 +138,21 @@ $.fn.editTable = function(submitCallback) {
             var rowId = rootEl.data('te-row-id');
             obj = submitCallback(rowId, newValues, currentValues);
 
-            for (var k in obj) {
-                if (obj.hasOwnProperty(k)) {
-                    cellVals[k] = obj[k];
+            var afterReceive = function(obj) {
+                for (var k in obj) {
+                    if (obj.hasOwnProperty(k)) {
+                        cellVals[k] = obj[k];
+                    }
                 }
+                loadCellVals();
+                setEditMode(false);
+            };
+
+            if (isPromise(obj)) {
+                obj.then(afterReceive);
+            } else {
+                afterReceive(obj);
             }
-            loadCellVals();
-            setEditMode(false);
         });
 
         storeCellVals();

@@ -1,5 +1,6 @@
 package com.clovercoin.pillowing.entity;
 
+import com.clovercoin.pillowing.constant.ItemType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,4 +14,9 @@ public class Item {
 
     @Column(unique = true)
     private String name;
+
+    /*
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ItemType type;*/
 }

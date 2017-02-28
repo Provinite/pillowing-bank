@@ -11,11 +11,12 @@
                     return oldValues;
                 if (newValues.quantity == 0)
                     $("tr[data-te-row-id='" + rowId + "']").remove();
-                return newValues;
+                return new Promise(function(resolve, reject){
+                    setTimeout()
+                });
             });
         });
         /*]]>*/
-
     </script>
 </head>
 <body th:inline="text">
