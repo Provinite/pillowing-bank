@@ -15,8 +15,7 @@ public class Item {
     @Column(unique = true)
     private String name;
 
-    /*
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ItemType type;*/
+    private ItemType itemType;
 }

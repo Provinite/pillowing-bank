@@ -11,6 +11,7 @@ public interface ClientService {
     Client saveClient(Client client);
     List<InventoryLine> getInventory(Client client);
     Page<InventoryLine> getInventoryPage(Client client, Integer page);
+    Page<InventoryLine> getCurrencyPage(Client client, Integer page);
     Page<Client> getPage(Integer page);
     InventoryLine saveInventoryLine(InventoryLine line);
 }

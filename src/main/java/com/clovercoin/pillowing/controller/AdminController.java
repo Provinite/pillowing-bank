@@ -2,19 +2,24 @@ package com.clovercoin.pillowing.controller;
 
 import com.clovercoin.pillowing.constant.Action;
 import com.clovercoin.pillowing.constant.ErrorCode;
+import com.clovercoin.pillowing.constant.ItemType;
 import com.clovercoin.pillowing.constant.Status;
 import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.InventoryLine;
 import com.clovercoin.pillowing.entity.Item;
 import com.clovercoin.pillowing.entity.User;
 import com.clovercoin.pillowing.forms.UserAddForm;
+import com.clovercoin.pillowing.repository.InventoryLineRepository;
 import com.clovercoin.pillowing.service.ClientService;
 import com.clovercoin.pillowing.service.ControllerHelper;
 import com.clovercoin.pillowing.service.ItemService;
 import com.clovercoin.pillowing.service.UserService;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,12 +27,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
+@Log
 public class AdminController {
     @Autowired
     private ClientService clientService;
@@ -37,6 +41,9 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private ItemService itemService;
+
+    @Autowired
+    private InventoryLineRepository inventoryLineRepository;
 
     @RequestMapping("/")
     public String index() {
@@ -59,13 +66,23 @@ public class AdminController {
         return "admin/client/add-client";
     }
 
-    @RequestMapping(value = {"/client/{id}", "/client/{id}/{page}"}, method = RequestMethod.GET)
-    public String viewClient(@PathVariable("id") Long id, @PathVariable("page") Optional<Integer> requestedPage, Model model) {
-        Integer page = requestedPage.orElse(1) - 1;
+    @RequestMapping(value = {"/client/{id}", "/client/{id}/inventory/{inventoryPage}/currency/{currencyPage}"}, method = RequestMethod.GET)
+    public Object viewClient(@PathVariable("id") Long id,
+                             @PathVariable("inventoryPage") Optional<Integer> requestedInventoryPage,
+                             @PathVariable("currencyPage") Optional<Integer> requestedCurrencyPage,
+                             Model model) {
+        Integer inventoryPage = requestedInventoryPage.orElse(1) - 1;
+        Integer currencyPage = requestedCurrencyPage.orElse(1) - 1;
         Client client = clientService.getById(id);
-        Page<InventoryLine> inventory = clientService.getInventoryPage(client, page);
+        Page<InventoryLine> inventory = clientService.getInventoryPage(client, inventoryPage);
+        Page<InventoryLine> currency = clientService.getCurrencyPage(client, currencyPage);
+
         model.addAttribute("client", client);
         model.addAttribute("inventoryPage", inventory);
+        model.addAttribute("currencyPage", currency);
+
+        model.addAttribute("inventoryPageNumber", inventoryPage+1);
+        model.addAttribute("currencyPageNumber", currencyPage+1);
 
         return "admin/client/view-client";
     }
@@ -77,22 +94,31 @@ public class AdminController {
         client.setName("bob");
         client = clientService.saveClient(client);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             Item item = new Item();
             item.setName("item-" + i);
+            item.setItemType(i < 10 ? ItemType.ITEM : ItemType.CURRENCY);
             itemService.saveItem(item);
         }
 
+        int page = 0;
         Page<Item> items = itemService.getPage(0);
-        for (int i = 0; i < 5; i++) {
-            Item item = items.getContent().get(i);
+        int offset = 0;
+        for (int i = 0; i < 20; i++) {
+            if (i-offset == items.getSize()) {
+                offset += items.getSize();
+                items = itemService.getPage(++page);
+            }
+            Item item = items.getContent().get(i-offset);
             InventoryLine inventoryLine = new InventoryLine();
             inventoryLine.setClient(client);
             inventoryLine.setItem(item);
             inventoryLine.setQuantity(2);
             clientService.saveInventoryLine(inventoryLine);
         }
-        return "Complete";
+
+        //return "complete";
+        return inventoryLineRepository.findByClientAndItemItemType(client, ItemType.ITEM, new PageRequest(0, 20, Sort.Direction.ASC, "item.name"));
     }
 
     @RequestMapping(value = "/client/add", method = RequestMethod.POST)

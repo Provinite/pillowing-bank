@@ -134,9 +134,8 @@ $.fn.editTable = function(submitCallback) {
             for (var i = 0; i < inputs.length; i++) {
                 newValues[inputs[i].data('te-attribute')] = inputs[i].val();
             }
-            currentValues = $.extend({}, cellVals);
-            var rowId = rootEl.data('te-row-id');
-            obj = submitCallback(rowId, newValues, currentValues);
+            var currentValues = $.extend({}, cellVals);
+            obj = submitCallback(rootEl, newValues, currentValues);
 
             var afterReceive = function(obj) {
                 for (var k in obj) {

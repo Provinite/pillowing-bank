@@ -6,14 +6,15 @@
     <script type="text/javascript">
         /*<![CDATA[*/
         $(document).ready(function() {
-            $('tr.data-line').editTable(function(rowId,newValues,oldValues) {
+            $('tr.data-line').editTable(function(row,newValues,oldValues) {
                 if (newValues.quantity < 0)
                     return oldValues;
-                if (newValues.quantity == 0)
-                    $("tr[data-te-row-id='" + rowId + "']").remove();
-                return new Promise(function(resolve, reject){
-                    setTimeout()
-                });
+                if (newValues.quantity == 0) {
+                    if (!row.data('currency')) {
+                        row.remove();
+                    }
+                }
+                return Promise.resolve(newValues);
             });
         });
         /*]]>*/
@@ -24,7 +25,46 @@
 <div class="row">
     <div class="small-7 column small-centered">
         <p class="lead">Viewing details of [[${client.name}]]</p>
-        <table th:if="${inventoryPage.totalElements ne 0}">
+        <table th:if="${currencyPage.totalElements ne 0}" class="hover">
+            <caption>Balances (Showing <th:block th:replace="partials/pagination :: showing(${currencyPage})" />)</caption>
+            <thead>
+                <tr>
+                    <th width="60%">
+                        Currency
+                    </th>
+                    <th width="20%">
+                        Balance
+                    </th>
+                    <th width="20%">
+                        Edit
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="currencyLine,iterationStatus : ${currencyPage.content}"
+                    class="data-line"
+                    th:attr="data-te-row-id=${currencyLine.id}"
+                    data-currency="true">
+                    <td th:text="${currencyLine.item.name}"></td>
+                    <td class="text-right" data-te-role="value"
+                        data-te-attribute="quantity"
+                        th:attr="data-te-value=${currencyLine.quantity}"
+                        th:text="${currencyLine.quantity}">
+                    </td>
+                    <td class="text-right" data-te-role="actions"></td>
+                </tr>
+            </tbody>
+        </table>
+        <th:block th:if="${(currencyPage.totalElements ne 0) and (currencyPage.totalPages gt 1)}">
+            <th:block
+                    th:replace="partials/pagination :: pagination(${currencyPage}, 8,
+                        @{/admin/client/{client}/inventory/{inventory}/currency/{page}(client=${client.id},inventory=${inventoryPageNumber})}
+                    )" />
+        </th:block>
+
+
+        <table th:if="${inventoryPage.totalElements ne 0}" class="hover">
+            <caption>Inventory (Showing <th:block th:replace="partials/pagination :: showing(${inventoryPage})" />)</caption>
             <thead>
             <tr>
                 <th width="60%">
@@ -51,8 +91,11 @@
             </tr>
             </tbody>
         </table>
-        <th:block th:if="${inventoryPage.totalElements ne 0}">
-            <th:block th:replace="partials/pagination :: pagination(${inventoryPage}, 8, @{'./{page}'})" />
+        <th:block th:if="${inventoryPage.totalElements ne 0 and inventoryPage.totalPages gt 1}">
+            <th:block
+                    th:replace="partials/pagination :: pagination(${inventoryPage}, 8,
+                        @{/admin/client/{client}/inventory/{page}/currency/{currency}(client=${client.id},currency=${currencyPageNumber})}
+                    )" />
         </th:block>
         <div th:if="${inventoryPage.totalElements eq 0}" class="callout warning">
             There is no inventory to display.

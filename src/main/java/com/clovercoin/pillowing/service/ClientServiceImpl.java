@@ -1,5 +1,6 @@
 package com.clovercoin.pillowing.service;
 
+import com.clovercoin.pillowing.constant.ItemType;
 import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.InventoryLine;
 import com.clovercoin.pillowing.repository.ClientRepository;
@@ -63,7 +64,18 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Page<InventoryLine> getInventoryPage(Client client, Integer page) {
-        return inventoryLineRepository.findByClient(client, new PageRequest(page, defaultPageSize, defaultInventoryLineSort));
+        return inventoryLineRepository.findByClientAndItemItemType(
+                client,
+                ItemType.ITEM,
+                new PageRequest(page, defaultPageSize, defaultInventoryLineSort));
+    }
+
+    @Override
+    public Page<InventoryLine> getCurrencyPage(Client client, Integer page) {
+        return inventoryLineRepository.findByClientAndItemItemType(
+                client,
+                ItemType.CURRENCY,
+                new PageRequest(page, defaultPageSize, defaultInventoryLineSort));
     }
 
     @Override

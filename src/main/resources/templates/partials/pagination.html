@@ -24,5 +24,8 @@
 
     </ul>
 </th:block>
+<th:block th:fragment="showing(page)" th:inline="text"><!--/*
+    */--><th:block th:with="start=${page.size * page.number + 1},end=${start+page.content.size()-1},total=${page.totalElements}">[[${start}]] - [[${end}]] of [[${total}]]</th:block><!--/*
+*/--></th:block>
 </body>
 </html>

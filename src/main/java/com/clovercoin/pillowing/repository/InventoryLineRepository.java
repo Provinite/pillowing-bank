@@ -1,5 +1,6 @@
 package com.clovercoin.pillowing.repository;
 
+import com.clovercoin.pillowing.constant.ItemType;
 import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.InventoryLine;
 import com.clovercoin.pillowing.entity.Item;
@@ -14,4 +15,5 @@ public interface InventoryLineRepository extends PagingAndSortingRepository<Inve
     List<InventoryLine> findByClient(Client client);
     Page<InventoryLine> findByClient(Client client, Pageable pageable);
     Page<InventoryLine> findByClientAndItem(Client client, Item item, Pageable pageable);
+    Page<InventoryLine> findByClientAndItemItemType(Client client, ItemType type, Pageable pageable);
 }
