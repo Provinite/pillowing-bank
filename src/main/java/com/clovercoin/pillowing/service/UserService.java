@@ -13,4 +13,5 @@ public interface UserService {
     User createUserFromForm(UserAddForm form);
     List<User> getAllUsers();
     Boolean userHasRole(User user, String role);
+    User getCurrentUser();
 }

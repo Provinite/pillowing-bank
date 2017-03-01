@@ -6,9 +6,13 @@ import com.clovercoin.pillowing.entity.User;
 import com.clovercoin.pillowing.forms.UserAddForm;
 import com.clovercoin.pillowing.repository.RoleRepository;
 import com.clovercoin.pillowing.repository.UserRepository;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -16,6 +20,7 @@ import org.springframework.util.Assert;
 import java.util.*;
 
 @Service
+@Log
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
@@ -119,5 +124,15 @@ public class UserServiceImpl implements UserService {
             return false;
 
         return user.getRoles().stream().map(Role::getRole).anyMatch(r -> r.equals(role));
+    }
+
+    @Override
+    public User getCurrentUser() {
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (currentAuth == null)
+            return null;
+        UserDetails ud = (UserDetails)currentAuth.getPrincipal();
+        String userEmail = ud.getUsername();
+        return userRepository.findByEmail(userEmail);
     }
 }

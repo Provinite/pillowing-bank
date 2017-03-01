@@ -3,6 +3,8 @@ package com.clovercoin.pillowing.service;
 import com.clovercoin.pillowing.constant.ItemType;
 import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.InventoryLine;
+import com.clovercoin.pillowing.entity.Item;
+import com.clovercoin.pillowing.entity.Transaction;
 import com.clovercoin.pillowing.repository.ClientRepository;
 import com.clovercoin.pillowing.repository.InventoryLineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -28,13 +32,23 @@ public class ClientServiceImpl implements ClientService {
     private ClientRepository clientRepository;
     private InventoryLineRepository inventoryLineRepository;
 
+    private UserService userService;
+    private TransactionService transactionService;
+
     @Autowired
-    private ClientServiceImpl(ClientRepository clientRepository, InventoryLineRepository inventoryLineRepository) {
+    public ClientServiceImpl(ClientRepository clientRepository,
+                              InventoryLineRepository inventoryLineRepository,
+                              UserService userService,
+                              TransactionService transactionService) {
         Assert.notNull(clientRepository, "This implementation of ClientService requires a ClientRepository.");
         Assert.notNull(inventoryLineRepository, "This implementation of ClientService requires an InventoryLineRepository.");
+        Assert.notNull(userService, "This implementation of ClientService requires a UserService.");
+        Assert.notNull(transactionService, "This implementation of ClientService requires a TransactionService.");
 
         this.clientRepository = clientRepository;
         this.inventoryLineRepository = inventoryLineRepository;
+        this.userService = userService;
+        this.transactionService = transactionService;
 
         this.defaultSort = new Sort(Sort.Direction.ASC, "name");
         this.defaultInventoryLineSort = new Sort(Sort.Direction.ASC, "item.name");
@@ -87,5 +101,56 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public InventoryLine saveInventoryLine(InventoryLine inventoryLine) {
         return inventoryLineRepository.save(inventoryLine);
+    }
+
+    @Override
+    public InventoryLine getInventoryLine(Client client, Item item) {
+        return inventoryLineRepository.findByClientAndItem(client, item);
+    }
+
+    @Override
+    @Transactional
+    public Transaction updateInventoryQuantity(Client client, Item item, Integer quantity, String note) {
+        InventoryLine line = inventoryLineRepository.findByClientAndItem(client, item);
+        boolean lineExists;
+        if (line == null) {
+            lineExists = false;
+            line = new InventoryLine();
+            line.setClient(client);
+            line.setItem(item);
+            line.setQuantity(0);
+        } else {
+            lineExists = true;
+            if (quantity.equals(line.getQuantity())) {
+                //no change to make
+                return null;
+            }
+        }
+
+        //non-currency items should not have 0-lines created for them
+        //nothing to do
+        if (!lineExists && quantity.equals(0) && item.getItemType() == ItemType.ITEM) {
+            return null;
+        }
+
+        Transaction transaction = new Transaction();
+        transaction.setClient(client);
+        transaction.setItem(item);
+        transaction.setUser(userService.getCurrentUser());
+        transaction.setQuantityChange(quantity - line.getQuantity());
+        transaction.setTimestamp(new Date());
+        transaction.setNote(note);
+
+        transaction = transactionService.saveTransaction(transaction);
+
+        if (lineExists && quantity.equals(0) && item.getItemType() == ItemType.ITEM) {
+            //remove the line instead of setting quantity to 0
+            inventoryLineRepository.delete(line);
+        } else {
+            line.setQuantity(quantity);
+            inventoryLineRepository.save(line);
+        }
+
+        return transaction;
     }
 }

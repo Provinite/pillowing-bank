@@ -3,24 +3,128 @@
 <head>
     <th:block th:replace="partials/header :: includes" />
     <title>Pillowing Bank - Client</title>
+    <script type="text/javascript" th:inline="javascript">
+        var rootUrl = /*[[@{/}]]*/ '/';
+        var clientId = /*[[${client.id}]]*/ 0;
+    </script>
     <script type="text/javascript">
         /*<![CDATA[*/
+        var EVENT_FOUNDATION_REVEAL_CLOSE = "closed.zf.reveal";
+
+
+
         $(document).ready(function() {
+            var inventoryForm = $("#inventoryChangeForm");
+            var inventoryModal = $("#inventoryChangeModal");
+
+            var fields = {
+                quantity: $("#quantity"),
+                item: $("#item"),
+                note: $("#note")
+            };
+
+            var populateItemForm = function(row, data) {
+                fields.quantity.val(data['quantity']);
+                fields.item.val(row.data('item-name'));
+                fields.note.val('');
+            };
+
+            var sendInventoryChange = function(itemId, quantity, note, success, error) {
+                var data = {
+                    clientId: clientId,
+                    itemId: itemId,
+                    quantity: quantity,
+                    note: note
+                };
+
+                $.ajax({
+                    method: 'post',
+                    dataType: 'json',
+                    url: rootUrl + 'admin/ajax/modifyInventory',
+                    data: data,
+                    success: success,
+                    error: error
+                });
+            };
+
+            inventoryForm.submit(function(e) {
+                e.preventDefault();
+            });
+
             $('tr.data-line').editTable(function(row,newValues,oldValues) {
-                if (newValues.quantity < 0)
-                    return oldValues;
-                if (newValues.quantity == 0) {
-                    if (!row.data('currency')) {
-                        row.remove();
-                    }
-                }
-                return Promise.resolve(newValues);
+                populateItemForm(row, newValues);
+                inventoryModal.foundation('open');
+                fields.note.focus();
+                return new Promise(function(resolve, reject) {
+                    var onSub = function() {
+                        var doContinue = function() {
+                            inventoryForm.off('submit', null, onSub);
+                            inventoryModal.off(EVENT_FOUNDATION_REVEAL_CLOSE);
+                            inventoryModal.foundation("close");
+                            sendInventoryChange(
+                                row.data('item-id'),
+                                newValues.quantity,
+                                fields.note.val(),
+                                function(response) {
+                                    if (isEmpty(response)) {
+                                        row.remove();
+                                    }
+                                    resolve(newValues);
+                                    swal("Nice!", "Inventory updated!", "success");
+                                    $(".sa-confirm-button-container button.confirm").focus();
+                                },
+                                function() {
+                                    resolve(oldValues);
+                                    swal("Uh-oh!", "Something went wrong", "error");
+                                });
+                        };
+
+                        if (fields.note.val() == '') {
+                            swal({
+                                title: "Are you sure?",
+                                text: "We strongly suggest a note with every transaction. Are you sure you want to submit one with no note?",
+                                type: "warning",
+                                showCancelButton: true,
+                                confirmButtonText: "Yes, I'm sure.",
+                                cancelButtonText: "Oops, take me back!",
+                                closeOnConfirm: false,
+                                showLoaderOnConfirm: true
+                            }, function(isConfirm) {
+                                if (isConfirm) {
+                                    doContinue();
+                                }
+                            });
+                            $(".sa-confirm-button-container button.confirm").focus();
+                        } else {
+                            swal("Loading", "Please Wait. . .");
+                            doContinue();
+                        }
+                    };
+                    var onClose = function() {
+                        inventoryModal.off(EVENT_FOUNDATION_REVEAL_CLOSE, null, onClose);
+                        resolve(oldValues);
+                    };
+                    inventoryForm.submit(onSub);
+                    inventoryModal.on(EVENT_FOUNDATION_REVEAL_CLOSE, null, onClose);
+                });
             });
         });
         /*]]>*/
     </script>
 </head>
 <body th:inline="text">
+<div id="inventoryChangeModal" class="reveal" data-reveal="">
+    <h2 id="modal-title">Inventory Change</h2>
+    <form id="inventoryChangeForm">
+        <label for="item">Item</label>
+        <input type="text" id="item" readonly="true" />
+        <label for="quantity">New Quantity</label>
+        <input type="text" id="quantity" readonly="true" />
+        <label for="note">Transaction Note</label>
+        <input type="text" id="note" placeholder="Transaction Note / Justification" />
+        <input type="submit" class="button expanded" value="Submit" />
+    </form>
+</div>
 <th:block th:replace="partials/header :: topbar('Pillowing Bank - Client', true, 'client')" />
 <div class="row">
     <div class="small-7 column small-centered">
@@ -43,7 +147,11 @@
             <tbody>
                 <tr th:each="currencyLine,iterationStatus : ${currencyPage.content}"
                     class="data-line"
-                    th:attr="data-te-row-id=${currencyLine.id}"
+                    th:attr="
+                        data-te-row-id=${currencyLine.id},
+                        data-item-name=${currencyLine.item.name},
+                        data-item-id=${currencyLine.item.id}
+                        "
                     data-currency="true">
                     <td th:text="${currencyLine.item.name}"></td>
                     <td class="text-right" data-te-role="value"
@@ -79,7 +187,11 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="inventoryLine,iterationStatus : ${inventoryPage.content}" class="data-line" th:attr="data-te-row-id=${inventoryLine.id}">
+            <tr th:each="inventoryLine,iterationStatus : ${inventoryPage.content}"
+                class="data-line"
+                th:attr="data-te-row-id=${inventoryLine.id},
+                        data-item-name=${inventoryLine.item.name},
+                        data-item-id=${inventoryLine.item.id}">
                 <td th:text="${inventoryLine.item.name}"></td>
                 <td class="text-right" data-te-role="value"
                     data-te-attribute="quantity"

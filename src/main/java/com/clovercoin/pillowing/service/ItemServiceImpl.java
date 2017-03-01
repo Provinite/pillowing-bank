@@ -43,4 +43,9 @@ public class ItemServiceImpl implements ItemService {
         Pageable pageable = new PageRequest(page, defaultPageSize, defaultSort);
         return itemRepository.findAll(pageable);
     }
+
+    @Override
+    public Item getById(Long id) {
+        return itemRepository.findOne(id);
+    }
 }

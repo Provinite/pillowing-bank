@@ -14,6 +14,10 @@ import java.util.List;
 public interface InventoryLineRepository extends PagingAndSortingRepository<InventoryLine, Long> {
     List<InventoryLine> findByClient(Client client);
     Page<InventoryLine> findByClient(Client client, Pageable pageable);
-    Page<InventoryLine> findByClientAndItem(Client client, Item item, Pageable pageable);
+
+    InventoryLine findByClientAndItem(Client client, Item item);
+
+    List<InventoryLine> findByClientAndItemItemType(Client client, ItemType type);
     Page<InventoryLine> findByClientAndItemItemType(Client client, ItemType type, Pageable pageable);
+
 }
