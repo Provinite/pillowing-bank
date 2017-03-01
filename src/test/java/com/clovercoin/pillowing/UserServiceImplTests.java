@@ -7,12 +7,16 @@ import com.clovercoin.pillowing.repository.RoleRepository;
 import com.clovercoin.pillowing.repository.UserRepository;
 import com.clovercoin.pillowing.service.NoSuchRoleException;
 import com.clovercoin.pillowing.service.UserServiceImpl;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
@@ -31,7 +35,6 @@ public class UserServiceImplTests {
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
     @Mock
     private RoleRepository roleRepository;
@@ -200,4 +203,52 @@ public class UserServiceImplTests {
 
         assertThat(user.getPassword()).isEqualTo(hashedPassword);
     }
+
+    @Test
+    @WithMockUser(username = "admin@foo.com")
+    public void GetCurrentUser_Should_ReturnCurrentUser_When_LoggedIn() {
+        when(userRepository.findByEmail("admin@foo.com")).then(i -> {
+           User user = new User();
+           user.setId(1L);
+           user.setUsername("something");
+           user.setEmail("admin@foo.com");
+           return user;
+        });
+
+        User currentUser = userService.getCurrentUser();
+        assertThat(currentUser).isNotNull();
+        assertThat(currentUser.getUsername()).isEqualTo("something");
+        assertThat(currentUser.getEmail()).isEqualTo("admin@foo.com");
+    }
+
+    @Test
+    public void GetCurrentUser_Should_ReturnNull_When_NotLoggedIn() {
+        assertThat(userService.getCurrentUser()).isNull();
+    }
+
+    @Test(expected = DuplicateKeyException.class)
+    public void SaveUser_Should_ThrowDuplicateKeyException_When_SaveThrowsDataIntegrityViolationException() {
+        when(userRepository.save(any(User.class))).thenThrow(new DataIntegrityViolationException("", new ConstraintViolationException("",null,null)));
+        User user = new User();
+        userService.createUser(user);
+    }
+
+    @Test
+    public void FindUserByEmail_Should_ReturnNull_When_NoUserWithGivenEmail() {
+        when(userRepository.findByEmail(anyString())).thenReturn(null);
+        assertThat(userService.findUserByEmail("anything@anywhere.com")).isNull();
+    }
+
+    @Test
+    public void FindUserByEmail_Should_ReturnUser_When_UserWithEmailExists() {
+        User expected = new User();
+        expected.setUsername("somebody");
+        expected.setEmail("anything@anywhere.com");
+        expected.setActive(1);
+
+        when(userRepository.findByEmail(expected.getEmail())).thenReturn(expected);
+
+        assertThat(userService.findUserByEmail(expected.getEmail())).isEqualTo(expected);
+    }
+
 }

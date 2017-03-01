@@ -7,6 +7,7 @@ import com.clovercoin.pillowing.entity.Item;
 import com.clovercoin.pillowing.entity.Transaction;
 import com.clovercoin.pillowing.repository.ClientRepository;
 import com.clovercoin.pillowing.repository.InventoryLineRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,7 +66,10 @@ public class ClientServiceImpl implements ClientService {
         try {
             result = clientRepository.save(client);
         } catch (DataIntegrityViolationException dive) {
-            throw new DuplicateKeyException("A client with the given name already exists", dive);
+            if (dive.getCause() instanceof ConstraintViolationException)
+                throw new DuplicateKeyException("A client with the given name already exists", dive);
+            else
+                throw dive;
         }
         return result;
     }
