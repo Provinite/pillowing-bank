@@ -3,12 +3,53 @@
 <head>
     <th:block th:replace="partials/header :: includes" />
     <title>Pillowing Bank - Clients</title>
+    <script type="text/javascript" th:inline="javascript">
+        var rootUrl = /*[[@{/}]]*/ '/';
+    </script>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        $(document).ready(function() {
+            var lastSuggestions = [];
+            var searchBox = $("#search");
+            searchBox.autocomplete({
+                serviceUrl: rootUrl + 'admin/ajax/search-clients',
+                paramName: 'name',
+                onSelect: function(suggestion) {
+                    window.top.location.href = rootUrl + 'admin/client/' + suggestion.data.id;
+                },
+                onSearchComplete: function(query, suggestions) {
+                    lastSuggestions = suggestions;
+                }
+           });
+           searchBox.keyup(function(e) {
+               if (e.keyCode == 13) {
+                   console.log("Enter!");
+                   console.log(lastSuggestions);
+                   for (var i = 0; i < lastSuggestions.length; i++) {
+                       if (lastSuggestions[i].value == $(this).val()) {
+                           window.top.location.href = rootUrl + 'admin/client/' + lastSuggestions[i].data.id;
+                           return;
+                       }
+                   }
+               }
+           });
+        });
+        /*]]>*/
+    </script>
 </head>
 <body th:inline="text">
 <th:block th:replace="partials/header :: topbar('Pillowing Bank - Clients', true, 'client')" />
 <div class="row">
     <div class="small-7 column small-centered">
-        <a th:href="@{/admin/client/add}" class="button"><i class="fa fa-plus"></i> Add Client</a>
+        <a th:href="@{/admin/client/add}" class="button">
+            <i class="fa fa-plus"></i> Add Client
+        </a>
+        <div class="row">
+            <div class="small-12 column input-group">
+                <span class="input-group-label"><i class="fa fa-search"></i> Name</span>
+                <input type="text" class="input-group-field" id="search" title="search" placeholder="Go to client" />
+            </div>
+        </div>
         <table th:if="${clientPage.totalElements ne 0}">
             <thead>
             <tr>

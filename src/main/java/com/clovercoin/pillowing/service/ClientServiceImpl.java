@@ -61,6 +61,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public Client getByName(String name) {
+        return clientRepository.findByName(name);
+    }
+
+    @Override
     public Client saveClient(Client client) {
         Client result;
         try {
@@ -155,5 +160,11 @@ public class ClientServiceImpl implements ClientService {
         }
 
         return transaction;
+    }
+
+    @Override
+    public Page<Client> searchClientsByName(String name, Integer page) {
+        Pageable p = new PageRequest(page, defaultPageSize, defaultSort);
+        return clientRepository.findByNameStartsWith(name, p);
     }
 }

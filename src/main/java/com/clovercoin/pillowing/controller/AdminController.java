@@ -94,6 +94,13 @@ public class AdminController {
         client.setName("bob");
         client = clientService.saveClient(client);
 
+        String[] clients = {"alice","bobert","charlie","chuck","dan","change","phil","lars"};
+        for (String s : clients) {
+            Client c = new Client();
+            c.setName(s);
+            clientService.saveClient(c);
+        }
+
         for (int i = 0; i < 20; i++) {
             Item item = new Item();
             item.setName("item-" + i);
