@@ -1,5 +1,6 @@
 package com.clovercoin.pillowing.service;
 
+import com.clovercoin.pillowing.constant.ItemType;
 import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.Item;
 import com.clovercoin.pillowing.repository.ItemRepository;
@@ -42,6 +43,18 @@ public class ItemServiceImpl implements ItemService {
     public Page<Item> getPage(Integer page) {
         Pageable pageable = new PageRequest(page, defaultPageSize, defaultSort);
         return itemRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Item> getItemPage(Integer page) {
+        Pageable pageable = new PageRequest(page, defaultPageSize, defaultSort);
+        return itemRepository.findByItemType(ItemType.ITEM, pageable);
+    }
+
+    @Override
+    public Page<Item> getCurrencyPage(Integer page) {
+        Pageable pageable = new PageRequest(page, defaultPageSize, defaultSort);
+        return itemRepository.findByItemType(ItemType.CURRENCY, pageable);
     }
 
     @Override

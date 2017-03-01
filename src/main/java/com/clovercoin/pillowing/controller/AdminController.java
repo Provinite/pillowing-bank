@@ -180,29 +180,61 @@ public class AdminController {
         return "admin/user/add-user";
     }
 
-    @RequestMapping(value = {"/items", "/items/{page}"}, method = RequestMethod.GET)
-    public String item(@PathVariable("page") Optional<Integer> page, Model model) {
-        Page<Item> dataPage = itemService.getPage(page.orElse(1) - 1);
-        model.addAttribute("page", page.orElse(1));
+    @RequestMapping(value = {"/items", "/items/{itemPage}/currencies/{currencyPage}"}, method = RequestMethod.GET)
+    public String item(
+            @PathVariable("itemPage") Optional<Integer> requestedItemPage,
+            @PathVariable("currencyPage") Optional<Integer> requestedCurrencyPage,
+            Model model) {
+        Page<Item> dataPage = itemService.getItemPage(requestedItemPage.orElse(1) - 1);
+        Page<Item> currencyPage = itemService.getCurrencyPage(requestedCurrencyPage.orElse(1) - 1);
+        model.addAttribute("itemPageNumber", requestedItemPage.orElse(1));
         model.addAttribute("itemPage", dataPage);
+        model.addAttribute("currencyPageNumber", requestedCurrencyPage.orElse(1));
+        model.addAttribute("currencyPage", currencyPage);
 
         return "admin/item/list-items";
     }
 
+    @RequestMapping(value = "/item/addCurrency", method = RequestMethod.GET)
+    public String addCurrency(Model model) {
+        Item item = new Item();
+        item.setItemType(ItemType.CURRENCY);
+        model.addAttribute("item", item);
+        controllerHelper.setAction(model, Action.ADD);
+        return "admin/item/add-item";
+    }
+
+    @RequestMapping(value = "/item/addCurrency", method = RequestMethod.POST)
+    public String addCurrency(Model model, Item item) {
+        Item blankItem = new Item();
+        blankItem.setItemType(ItemType.CURRENCY);
+        handleItemSave(item, blankItem, model);
+        return "admin/item/add-item";
+    }
+
     @RequestMapping(value = "/item/add", method = RequestMethod.GET)
     public String addItem(Model model) {
-        model.addAttribute("item", new Item());
+        Item item = new Item();
+        item.setItemType(ItemType.ITEM);
+        model.addAttribute("item", item);
         controllerHelper.setAction(model, Action.ADD);
         return "admin/item/add-item";
     }
 
     @RequestMapping(value = "/item/add", method = RequestMethod.POST)
     public String addItem(Model model, Item item) {
-        model.addAttribute("item_name", item.getName());
+        Item blankItem = new Item();
+        blankItem.setItemType(ItemType.ITEM);
+        handleItemSave(item, blankItem, model);
+        return "admin/item/add-item";
+    }
+
+    private void handleItemSave(Item item, Item blankItem, Model model) {
         controllerHelper.setAction(model, Action.ADD_SUBMIT);
+        model.addAttribute("item_name", item.getName());
         try {
             itemService.saveItem(item);
-            model.addAttribute("item", new Item());
+            model.addAttribute("item", blankItem);
             model.addAttribute("item_name", item.getName());
             controllerHelper.setStatus(model, Status.SUCCESS);
         } catch (DuplicateKeyException dke) {
@@ -214,7 +246,6 @@ public class AdminController {
             controllerHelper.setError(model, ErrorCode.UNKNOWN);
             model.addAttribute("item", item);
         }
-        return "admin/item/add-item";
     }
 
 }

@@ -10,24 +10,52 @@
     <div class="small-7 column small-centered">
         <a th:href="@{/admin/item/add}" class="button"><i class="fa fa-plus"></i> Add Item</a>
         <table th:if="${itemPage.totalElements ne 0}">
+            <caption>Items (Showing <th:block th:replace="partials/pagination :: showing(${itemPage})" />)</caption>
             <thead>
-            <tr>
-                <th>
-                    Item
-                </th>
-            </tr>
+                <tr>
+                    <th>
+                        Item
+                    </th>
+                </tr>
             </thead>
             <tbody>
-            <tr th:each="item,iterationStatus : ${itemPage.content}">
-                <td th:text="${item.name}"></td>
-            </tr>
+                <tr th:each="item,iterationStatus : ${itemPage.content}">
+                    <td th:text="${item.name}"></td>
+                </tr>
             </tbody>
         </table>
         <th:block th:if="${itemPage.totalElements ne 0}">
-            <th:block th:replace="partials/pagination :: pagination(${itemPage}, 8, @{'/admin/items/{page}'})" />
+            <th:block th:replace="partials/pagination :: pagination(${itemPage}, 8,
+            @{/admin/items/{page}/currency/{currencyPage}(currencyPage=${currencyPageNumber})})" />
         </th:block>
         <div th:if="${itemPage.totalElements eq 0}" class="callout warning">
             There are no items to display.
+        </div>
+
+        <hr />
+
+        <a th:href="@{/admin/item/addCurrency}" class="button"><i class="fa fa-plus"></i> Add Currency</a>
+        <table th:if="${currencyPage.totalElements ne 0}">
+            <caption>Currencies (Showing <th:block th:replace="partials/pagination :: showing(${currencyPage})" />)</caption>
+            <thead>
+                <tr>
+                    <th>
+                        Currency
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="currency,iterationStatus : ${currencyPage.content}">
+                    <td th:text="${currency.name}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <th:block th:if="${currencyPage.totalElements ne 0}">
+            <th:block th:replace="partials/pagination :: pagination(${itemPage}, 8,
+            @{/admin/items/{itemPage}/currency/{page}(itemPage=${itemPageNumber})})" />
+        </th:block>
+        <div th:if="${currencyPage.totalElements eq 0}" class="callout warning">
+            There are no currencies to display.
         </div>
     </div>
 </div>

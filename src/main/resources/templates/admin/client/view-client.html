@@ -170,45 +170,44 @@
                     )" />
         </th:block>
 
+        <hr />
 
         <table th:if="${inventoryPage.totalElements ne 0}" class="hover">
             <caption>Inventory (Showing <th:block th:replace="partials/pagination :: showing(${inventoryPage})" />)</caption>
             <thead>
-            <tr>
-                <th width="60%">
-                    Item
-                </th>
-                <th class="text-right" width="20%">
-                    Quantity
-                </th>
-                <th class="text-right" width="20%">
-                    Edit
-                </th>
-            </tr>
+                <tr>
+                    <th width="60%">
+                        Item
+                    </th>
+                    <th class="text-right" width="20%">
+                        Quantity
+                    </th>
+                    <th class="text-right" width="20%">
+                        Edit
+                    </th>
+                </tr>
             </thead>
             <tbody>
-            <tr th:each="inventoryLine,iterationStatus : ${inventoryPage.content}"
-                class="data-line"
-                th:attr="data-te-row-id=${inventoryLine.id},
-                        data-item-name=${inventoryLine.item.name},
-                        data-item-id=${inventoryLine.item.id}">
-                <td th:text="${inventoryLine.item.name}"></td>
-                <td class="text-right" data-te-role="value"
-                    data-te-attribute="quantity"
-                    th:attr="data-te-value=${inventoryLine.quantity}"
-                    th:text="${inventoryLine.quantity}">
-                </td>
-                <td class="text-right" data-te-role="actions">
-                </td>
-            </tr>
+                <tr th:each="inventoryLine,iterationStatus : ${inventoryPage.content}"
+                    class="data-line"
+                    th:attr="data-te-row-id=${inventoryLine.id},
+                            data-item-name=${inventoryLine.item.name},
+                            data-item-id=${inventoryLine.item.id}">
+                    <td th:text="${inventoryLine.item.name}"></td>
+                    <td class="text-right" data-te-role="value"
+                        data-te-attribute="quantity"
+                        th:attr="data-te-value=${inventoryLine.quantity}"
+                        th:text="${inventoryLine.quantity}">
+                    </td>
+                    <td class="text-right" data-te-role="actions">
+                    </td>
+                </tr>
             </tbody>
         </table>
-        <th:block th:if="${inventoryPage.totalElements ne 0 and inventoryPage.totalPages gt 1}">
-            <th:block
-                    th:replace="partials/pagination :: pagination(${inventoryPage}, 8,
-                        @{/admin/client/{client}/inventory/{page}/currency/{currency}(client=${client.id},currency=${currencyPageNumber})}
-                    )" />
-        </th:block>
+        <th:block
+                th:replace="partials/pagination :: pagination(${inventoryPage}, 8,
+                    @{/admin/client/{client}/inventory/{page}/currency/{currency}(client=${client.id},currency=${currencyPageNumber})}
+                )" />
         <div th:if="${inventoryPage.totalElements eq 0}" class="callout warning">
             There is no inventory to display.
         </div>
