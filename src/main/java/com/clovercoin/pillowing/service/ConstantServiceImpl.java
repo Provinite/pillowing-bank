@@ -16,6 +16,8 @@ public class ConstantServiceImpl implements ConstantService {
         constants.put("MODEL_KEY_ACTION", "MK_ACTION");
         constants.put("MODEL_KEY_MESSAGE", "MK_MESSAGE");
         constants.put("MODEL_KEY_ERROR", "MK_ERROR");
+        constants.put("MODEL_KEY_IS_ADMIN", "MK_IS_ADMIN");
+        constants.put("MODEL_KEY_IS_MOD", "MK_IS_MOD");
 
         constants.put("ACTION_NONE", 0);
         constants.put("ACTION_ADD", 1);

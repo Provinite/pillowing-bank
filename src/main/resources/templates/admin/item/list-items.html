@@ -3,6 +3,57 @@
 <head>
     <th:block th:replace="partials/header :: includes" />
     <title>Pillowing Bank - Items</title>
+    <script type="text/javascript" th:inline="javascript">
+        var rootUrl = /*[[@{/}]]*/ '/';
+    </script>
+    <script th:if="${__${IS_ADMIN}__}">
+        $(document).ready(function() {
+            $("tr.data-line").editTable(function(row, newVals, oldVals){
+                return new Promise(function(resolve, reject) {
+                    var doContinue = function() {
+                        var data = {
+                            id: $(row).data('item-id'),
+                            name: newVals.name
+                        };
+                        $.ajax({
+                            method: 'post',
+                            dataType: 'json',
+                            url: rootUrl + 'admin/ajax/updateItem',
+                            data: data,
+                            success: function(response) {
+                                resolve(newVals);
+                                swal("Aw yisss!", "All set. Item name changed.", "success");
+                            },
+                            error: function(xhr) {
+                                resolve(oldVals);
+                                if (xhr.status == 409) {
+                                    swal("Oh Snap", "An item with that name already exists.", "error");
+                                } else {
+                                    swal("Oh Snap", "Something went wrong!", "error");
+                                }
+                            }
+                        });
+                    };
+
+                    swal({
+                        title: "Are you sure?",
+                        text: "Changing the name of an item will update it for everyone that has that item as well. " +
+                        "Are you sure you want to change " + oldVals.name + " to " + newVals.name + "?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, I'm sure.",
+                        cancelButtonText: "Oops, take me back!",
+                        closeOnConfirm: false,
+                        showLoaderOnConfirm: true
+                    }, function(isConfirm) {
+                        if (isConfirm) {
+                            doContinue();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </head>
 <body th:inline="text">
 <th:block th:replace="partials/header :: topbar('Pillowing Bank - Items', true, 'item')" />
@@ -16,11 +67,24 @@
                     <th>
                         Item
                     </th>
+                    <th th:if="${__${IS_ADMIN}__}" width="20%">
+                        Edit
+                    </th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="item,iterationStatus : ${itemPage.content}">
-                    <td th:text="${item.name}"></td>
+                <tr th:each="item,iterationStatus : ${itemPage.content}" class="data-line" th:attr="data-item-id=${item.id}">
+                    <td
+                        data-te-role="value"
+                        data-te-attribute="name"
+                        th:attr="data-te-value=${item.name}"
+                        th:text="${item.name}">
+                    </td>
+                    <td
+                        th:if="${__${IS_ADMIN}__}"
+                        data-te-role="actions"
+                        class="text-right">
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -42,11 +106,24 @@
                     <th>
                         Currency
                     </th>
+                    <th th:if="${__${IS_ADMIN}__}">
+                        Edit
+                    </th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="currency,iterationStatus : ${currencyPage.content}">
-                    <td th:text="${currency.name}"></td>
+                <tr th:each="currency,iterationStatus : ${currencyPage.content}" class="data-line" th:attr="data-item-id=${currency.id}">
+                    <td
+                        data-te-role="value"
+                        data-te-attribute="name"
+                        th:attr="data-te-value=${currency.name}"
+                        th:text="${currency.name}">
+                    </td>
+                    <td
+                            th:if="${__${IS_ADMIN}__}"
+                            data-te-role="actions"
+                            class="text-right">
+                    </td>
                 </tr>
             </tbody>
         </table>

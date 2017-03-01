@@ -10,6 +10,7 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -129,7 +130,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getCurrentUser() {
         Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (currentAuth == null)
+        if (currentAuth == null
+                || !SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+                || currentAuth instanceof AnonymousAuthenticationToken)
             return null;
         UserDetails ud = (UserDetails)currentAuth.getPrincipal();
         String userEmail = ud.getUsername();

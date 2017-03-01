@@ -61,4 +61,9 @@ public class ItemServiceImpl implements ItemService {
     public Item getById(Long id) {
         return itemRepository.findOne(id);
     }
+
+    @Override
+    public Item getByName(String name) {
+        return itemRepository.findByName(name);
+    }
 }

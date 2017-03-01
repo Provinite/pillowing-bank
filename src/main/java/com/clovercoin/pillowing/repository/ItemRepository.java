@@ -9,4 +9,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface ItemRepository extends PagingAndSortingRepository<Item, Long> {
     Page<Item> findByItemType(ItemType itemType, Pageable pageable);
+
+    Item findByName(String name);
 }
