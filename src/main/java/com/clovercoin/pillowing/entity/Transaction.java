@@ -27,7 +27,7 @@ public class Transaction {
     @Column(nullable = false)
     private Integer quantityChange;
 
-    @Column
+    @Column(length = 2048)
     private String note;
 
     @Column(nullable = false)

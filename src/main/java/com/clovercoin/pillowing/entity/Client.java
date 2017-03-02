@@ -13,4 +13,7 @@ public class Client {
 
     @Column(unique = true)
     private String name;
+
+    @Column(length = 2048)
+    private String note;
 }
