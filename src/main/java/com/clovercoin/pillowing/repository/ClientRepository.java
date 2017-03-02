@@ -7,6 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface ClientRepository extends PagingAndSortingRepository<Client, Long> {
-    Page<Client> findByNameStartsWith(String name, Pageable pageable);
+    Page<Client> findByNameStartsWithIgnoreCase(String name, Pageable pageable);
     Client findByName(String name);
 }

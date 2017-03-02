@@ -42,9 +42,10 @@ public class AdminController {
     private ItemService itemService;
     @Autowired
     private SecurityService securityService;
-
     @Autowired
     private InventoryLineRepository inventoryLineRepository;
+    @Autowired
+    private TransactionService transactionService;
 
     @RequestMapping("/")
     public String index() {
@@ -131,7 +132,7 @@ public class AdminController {
             clientService.saveClient(c);
         }
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 100; i++) {
             Item item = new Item();
             item.setName("item-" + i);
             item.setItemType(i < 10 ? ItemType.ITEM : ItemType.CURRENCY);
@@ -141,20 +142,14 @@ public class AdminController {
         int page = 0;
         Page<Item> items = itemService.getPage(0);
         int offset = 0;
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 100; i++) {
             if (i-offset == items.getSize()) {
                 offset += items.getSize();
                 items = itemService.getPage(++page);
             }
-            Item item = items.getContent().get(i-offset);
-            InventoryLine inventoryLine = new InventoryLine();
-            inventoryLine.setClient(client);
-            inventoryLine.setItem(item);
-            inventoryLine.setQuantity(2);
-            clientService.saveInventoryLine(inventoryLine);
+            clientService.updateInventoryQuantity(client, items.getContent().get(i-offset), 2, "User won a big fat raffle. So much winning. Very wow!");
         }
 
-        //return "complete";
         return inventoryLineRepository.findByClientAndItemItemType(client, ItemType.ITEM, new PageRequest(0, 20, Sort.Direction.ASC, "item.name"));
     }
 
@@ -301,6 +296,37 @@ public class AdminController {
             controllerHelper.setError(model, ErrorCode.UNKNOWN);
             model.addAttribute("item", item);
         }
+    }
+
+    @RequestMapping(value = {"/audit", "/audit/{page}"}, method = RequestMethod.GET)
+    public String audit(@PathVariable("page") Optional<Integer> page, Model model) {
+        Integer requestedPage = page.orElse(1) - 1;
+        model.addAttribute("transactionPage", transactionService.getPage(requestedPage));
+        return "admin/audit/list-transactions";
+    }
+
+    @RequestMapping(value = {"/audit/user/{id}", "/audit/user/{id}/{page}"}, method = RequestMethod.GET)
+    public String auditUser(@PathVariable("id") Long userId,
+                            @PathVariable("page") Optional<Integer> page,
+                            Model model) {
+        Integer requestedPage = page.orElse(1) - 1;
+        User user = userService.getById(userId);
+        model.addAttribute("transactionPage", transactionService.searchByUser(user, requestedPage));
+        model.addAttribute("user", user);
+
+        return "admin/audit/list-transactions";
+    }
+
+    @RequestMapping(value = {"/audit/client/{id}", "/audit/client/{id}/{page}"}, method = RequestMethod.GET)
+    public String auditClient(@PathVariable("id") Long clientId,
+                            @PathVariable("page") Optional<Integer> page,
+                            Model model) {
+        Integer requestedPage = page.orElse(1) - 1;
+        Client client = clientService.getById(clientId);
+        model.addAttribute("transactionPage", transactionService.searchByClient(client, requestedPage));
+        model.addAttribute("client", client);
+
+        return "admin/audit/list-transactions";
     }
 
 }

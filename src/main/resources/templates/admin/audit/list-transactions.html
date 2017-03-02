@@ -1,0 +1,117 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="partials/header :: includes" />
+    <title>Pillowing Bank - Clients</title>
+    <script type="text/javascript" th:inline="javascript">
+        var rootUrl = /*[[@{/}]]*/ '/';
+    </script>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        $(document).ready(function() {
+
+            var autocomplete = function(url, redirect) {
+                return {
+                    serviceUrl: rootUrl + url,
+                    paramName: 'name',
+                    onSelect: function(suggestion) {
+                        window.top.location.href = rootUrl + redirect(suggestion);
+                    }
+                }
+            };
+
+            var lastSuggestions = [];
+            var userSearchBox = $("#searchUser");
+            var clientSearchBox = $("#searchClient");
+            userSearchBox.autocomplete(autocomplete(
+                'admin/ajax/search-users',
+                function(suggestion) {
+                    return 'admin/audit/user/' + suggestion.data.id;
+                }
+            ));
+            clientSearchBox.autocomplete(autocomplete('admin/ajax/search-clients',
+                function(suggestion) {
+                    return 'admin/audit/client/' + suggestion.data.id;
+                }
+            ));
+        });
+        /*]]>*/
+    </script>
+</head>
+<body th:inline="text">
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - Audit', true, 'audit')" />
+<div class="row">
+    <div class="small-10 column small-centered">
+        <div class="row">
+            <div class="small-12 column input-group">
+                <span class="input-group-label"><i class="fa fa-search"></i> Client</span>
+                <input type="text" class="input-group-field" id="searchClient" title="search" placeholder="Audit client" />
+            </div>
+            <div class="small-12 column input-group">
+                <span class="input-group-label"><i class="fa fa-search"></i> Staff Member</span>
+                <input type="text" class="input-group-field" id="searchUser" title="search" placeholder="Audit staff member" />
+            </div>
+        </div>
+        <hr />
+        <div class="table-scroll">
+            <table th:if="${transactionPage.totalElements ne 0}">
+                <caption>
+                    <th:block th:text="'All Transactions'" th:if="${client eq null and user eq null}" />
+                    <th:block th:text="'Auditing ' + ${user.username} + '\'s Transactions'" th:if="${user ne null}" />
+                    <th:block th:text="'Auditing ' + ${client.name} + '\'s Inventory'" th:if="${client ne null}" />
+                    (<th:block th:replace="partials/pagination :: showing(${transactionPage})" />)
+
+                </caption>
+                <thead>
+                    <tr>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Client
+                        </th>
+                        <th>
+                            Staff Member
+                        </th>
+                        <th>
+                            Item
+                        </th>
+                        <th class="text-right">
+                            Quantity Change
+                        </th>
+                        <th>
+                            Note
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="transaction,iterationStatus : ${transactionPage.content}">
+                        <td th:text="${#dates.format(transaction.timestamp)}"> </td>
+                        <td>
+                            <a th:text="${transaction.client.name}" th:href="@{/admin/client/{id}(id=${transaction.client.id})}"></a>
+                        </td>
+                        <td th:text="${transaction.user.username}"></td>
+                        <td th:text="${transaction.item.name}"></td>
+                        <td class="text-right" th:text="${(transaction.quantityChange > 0 ? '+' : '') + transaction.quantityChange}"></td>
+                        <td th:text="${transaction.note}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <th:block th:if="${transactionPage.totalElements ne 0 and user eq null and client eq null}">
+            <th:block th:replace="partials/pagination :: pagination(${transactionPage}, 8, @{'/admin/audit/{page}'})" />
+        </th:block>
+        <th:block th:if="${transactionPage.totalElements ne 0 and client ne null}">
+            <th:block th:replace="partials/pagination :: pagination(${transactionPage}, 8, @{/admin/audit/client/{clientId}/{page}(clientId=${client.id})})" />
+        </th:block>
+        <th:block th:if="${transactionPage.totalElements ne 0 and user ne null}">
+            <th:block th:replace="partials/pagination :: pagination(${transactionPage}, 8, @{/admin/audit/user/{userId}/{page}(userId=${user.id})})" />
+        </th:block>
+        <div th:if="${transactionPage.totalElements eq 0}" class="callout warning">
+            There are no transactions to display.
+        </div>
+    </div>
+</div>
+<th:block th:replace="partials/footer :: footer" />
+</body>
+</html>

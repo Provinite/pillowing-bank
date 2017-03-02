@@ -10,6 +10,9 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +30,9 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private Integer defaultSize;
+    private Sort defaultSort;
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         Assert.notNull(userRepository, "This implementation of UserService requires a UserRepository.");
@@ -36,6 +42,9 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+
+        this.defaultSize = 20;
+        this.defaultSort = new Sort(Sort.Direction.ASC, "username");
     }
 
     @Override
@@ -142,5 +151,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getById(Long id) {
         return userRepository.findOne(id);
+    }
+
+    @Override
+    public Page<User> searchUsersByUsername(String username, Integer page) {
+        return userRepository.findByUsernameContainsIgnoreCase(username, new PageRequest(page, defaultSize, defaultSort));
     }
 }

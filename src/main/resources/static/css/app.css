@@ -126,3 +126,11 @@ td input[type='text'] {
 td.text-right input[type='text'] {
     text-align:right;
 }
+
+.table-scroll table td, .table-scroll table th {
+    white-space: nowrap;
+}
+
+.button.inline {
+    margin-bottom:0.2rem;
+}

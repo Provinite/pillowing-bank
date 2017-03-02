@@ -126,7 +126,10 @@
 <th:block th:replace="partials/header :: topbar('Pillowing Bank - Client', true, 'client')" />
 <div class="row">
     <div class="small-7 column small-centered">
-        <p class="lead">Viewing inventory of <strong>[[${client.name}]]</strong></p>
+        <p class="lead">
+            Viewing inventory of <strong>[[${client.name}]]</strong>
+            <a class="tiny button inline" th:href="@{/admin/audit/client/{id}(id=${client.id})}"><i class="fa fa-arrow-right"></i> Audit Client</a>
+        </p>
         <th:block th:if="${client.note ne null and client.note.length() gt 0}">
             <div class="callout primary">
                 <p class="lead">This client has a staff note.</p>

@@ -165,6 +165,6 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Page<Client> searchClientsByName(String name, Integer page) {
         Pageable p = new PageRequest(page, defaultPageSize, defaultSort);
-        return clientRepository.findByNameStartsWith(name, p);
+        return clientRepository.findByNameStartsWithIgnoreCase(name, p);
     }
 }

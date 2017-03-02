@@ -3,11 +3,13 @@ package com.clovercoin.pillowing.controller;
 import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.InventoryLine;
 import com.clovercoin.pillowing.entity.Item;
+import com.clovercoin.pillowing.entity.User;
 import com.clovercoin.pillowing.forms.InventoryModificationForm;
 import com.clovercoin.pillowing.response.AutoCompleteResponse;
 import com.clovercoin.pillowing.response.AutoCompleteSuggestion;
 import com.clovercoin.pillowing.service.ClientService;
 import com.clovercoin.pillowing.service.ItemService;
+import com.clovercoin.pillowing.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,9 @@ public class AdminAjaxController {
 
     @Autowired
     private ItemService itemService;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/modifyInventory", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -93,6 +98,20 @@ public class AdminAjaxController {
                 .forEach(item -> {
                     AutoCompleteSuggestion suggestion = new AutoCompleteSuggestion(item.getName());
                     suggestion.getData().put("id", item.getId());
+                    response.getSuggestions().add(suggestion);
+                });
+        return response;
+    }
+
+    @RequestMapping(value = "/search-users", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public AutoCompleteResponse searchUsers(@RequestParam("name") String name) {
+        Page<User> matchingUsers = userService.searchUsersByUsername(name, 0);
+        AutoCompleteResponse response = new AutoCompleteResponse();
+        matchingUsers.getContent()
+                .forEach(user -> {
+                    AutoCompleteSuggestion suggestion = new AutoCompleteSuggestion(user.getUsername());
+                    suggestion.getData().put("id", user.getId());
                     response.getSuggestions().add(suggestion);
                 });
         return response;

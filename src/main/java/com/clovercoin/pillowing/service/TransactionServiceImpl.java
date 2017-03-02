@@ -1,6 +1,8 @@
 package com.clovercoin.pillowing.service;
 
+import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.Transaction;
+import com.clovercoin.pillowing.entity.User;
 import com.clovercoin.pillowing.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,5 +37,16 @@ public class TransactionServiceImpl implements TransactionService {
     public Page<Transaction> getPage(Integer page) {
         Pageable pageable = new PageRequest(page, defaultSize, defaultSort);
         return transactionRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Transaction> searchByUser(User user, Integer page) {
+        return transactionRepository.findByUser(user, new PageRequest(page, defaultSize, defaultSort));
+    }
+
+    @Override
+    public Page<Transaction> searchByClient(Client client, Integer page) {
+        return transactionRepository.findByClient(client, new PageRequest(page, defaultSize, defaultSort));
+
     }
 }
