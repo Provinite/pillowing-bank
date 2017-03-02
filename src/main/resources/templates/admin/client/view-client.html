@@ -171,7 +171,9 @@
         </th:block>
 
         <hr />
-
+        <a th:href="@{/admin/client/{client}/add-item(client=${client.id})}" class="button">
+            <i class="fa fa-plus"></i> Update Inventory
+        </a>
         <table th:if="${inventoryPage.totalElements ne 0}" class="hover">
             <caption>Inventory (Showing <th:block th:replace="partials/pagination :: showing(${inventoryPage})" />)</caption>
             <thead>

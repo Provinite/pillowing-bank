@@ -1,0 +1,165 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="partials/header :: includes" />
+    <title>Pillowing Bank - Add Client</title>
+    <script type="text/javascript" th:inline="javascript">
+        var rootUrl = /*[[@{/}]]*/ '/';
+        var clientId = /*[[${client.id}]]*/ 0;
+    </script>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        $(document).ready(function() {
+            var getItemQuantity = function(clientId, itemId) {
+                return new Promise(function(resolve, reject) {
+                    var data = {
+                        clientId: clientId,
+                        itemId: itemId
+                    };
+
+                    $.ajax({
+                        method: 'GET',
+                        dataType: 'json',
+                        url: rootUrl + 'admin/ajax/get-inventory-line',
+                        data: data,
+                        success: function(response) {
+                            resolve(response.quantity);
+                        },
+                        error: function() {
+                            reject();
+                        }
+                    })
+                });
+            };
+
+            var itemInput = $("#itemName");
+            var itemIdField = $("#itemId");
+            var quantityInput = $("#quantity");
+            var noteInput = $("#note");
+            var itemForm = $("#itemForm");
+
+            var confirmed = false;
+
+            itemInput.autocomplete({
+                serviceUrl: rootUrl + 'admin/ajax/search-items',
+                paramName: 'name',
+                onSelect: function(suggestion) {
+                    $(this).parent().find("i.fa").removeClass("fa-times").addClass("fa-check");
+                    itemIdField.val(suggestion.data.id);
+                    confirmed = false;
+                    getItemQuantity(clientId, suggestion.data.id).then(function(quantity) {
+                        if (itemIdField.val() != '') {
+                            quantityInput.prop("readonly", false);
+                            quantityInput.val(quantity);
+                        }
+                    });
+                },
+                onInvalidateSelection: function() {
+                    $(this).parent().find("i.fa").removeClass("fa-check").addClass("fa-times");
+                    itemIdField.val('');
+                    quantityInput.val('');
+                    quantityInput.prop("readonly", true);
+                    confirmed = false;
+                }
+            });
+
+            itemForm.submit(function(e) {
+                if (itemIdField.val() == '') {
+                    swal("Oops", "Looks like you didn't pick an item.", "error");
+                    e.preventDefault();
+                    return false;
+                }
+                if (quantityInput.val() == '' || !itemIdField.val().match(/^-?[0-9]+$/)) {
+                    swal("Oops", "You've provided an invalid quantity. It should be a number.", "error");
+                    e.preventDefault();
+                    return false;
+                }
+                if (noteInput.val().trim() == '' && !confirmed) {
+                    e.preventDefault();
+                    swal({
+                        title: "Are you sure?",
+                        text: "We strongly suggest a note with every transaction. Are you sure you want to submit one with no note?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, I'm sure.",
+                        cancelButtonText: "Oops, take me back!",
+                        closeOnConfirm: false,
+                        showLoaderOnConfirm: true
+                    }, function(isConfirm) {
+                        if (isConfirm) {
+                            confirmed = true;
+                            itemForm.submit();
+                        }
+                    });
+                }
+            });
+
+            itemIdField.val('');
+            itemInput.val('');
+            quantityInput.val('');
+        });
+        /*]]>*/
+    </script>
+</head>
+<body th:inline="text">
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - Manage Inventory', true, 'client')" />
+<div class="row">
+    <div class="small-7 small-centered column">
+        <th:block th:if="${__${ACTION}__} eq ${@constantService.get('ACTION_ADD_SUBMIT')}">
+
+            <div class="callout success" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_SUCCESS')}">
+                Inventory updated. <a class="button small" th:href="@{/admin/client/{id}(id=${client.id})}"><i class="fa fa-repeat"></i> Return to client inventory</a>
+            </div>
+
+            <div class="callout alert" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_FAILURE')}">
+
+                <th:block th:if="${__${ERROR}__} eq ${@constantService.get('ERROR_UNKNOWN')}">
+                    Sorry, something went wrong.
+                </th:block>
+
+            </div>
+
+        </th:block>
+        <form id="itemForm" th:action="@{''}" th:object="${form}" method="post" autocomplete="off">
+            <input type="hidden" th:field="*{clientId}" />
+            <input type="hidden" th:field="*{itemId}" id="itemId" />
+            <label for="clientName">Client Name</label>
+            <input type="text"
+                   id="clientName"
+                   name="clientName"
+                   th:value="${client.name}"
+                   readonly="readonly" />
+
+            <label for="itemName">Item</label>
+            <div class="input-group">
+                <span class="input-group-label"><i class="fa fa-times"></i></span>
+                <input  type="text"
+                        id="itemName"
+                        data-focus="true"
+                        th:field="*{itemName}"
+                        placeholder="Item"
+                        class="input-group-field"/>
+            </div>
+
+
+            <label for="quantity">Quantity</label>
+            <input  type="number"
+                    id="quantity"
+                    th:field="*{quantity}"
+                    placeholder="Quantity"
+                    readonly="readonly" />
+
+            <label for="note">Note / Reason for Inventory Change</label>
+            <input  type="text"
+                    id="note"
+                    th:field="*{note}"
+                    placeholder="Note"/>
+
+            <input type="submit" class="button expanded" value="Update Inventory" />
+        </form>
+    </div>
+</div>
+<th:block th:replace="partials/footer :: footer" />
+</body>
+
+</html>

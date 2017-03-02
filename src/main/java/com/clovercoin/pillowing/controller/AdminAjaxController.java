@@ -83,4 +83,35 @@ public class AdminAjaxController {
                 });
         return response;
     }
+
+    @RequestMapping(value = "/search-items", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public AutoCompleteResponse searchItems(@RequestParam("name") String name) {
+        Page<Item> matchingItems = itemService.searchItemsByName(name, 0);
+        AutoCompleteResponse response = new AutoCompleteResponse();
+        matchingItems.getContent()
+                .forEach(item -> {
+                    AutoCompleteSuggestion suggestion = new AutoCompleteSuggestion(item.getName());
+                    suggestion.getData().put("id", item.getId());
+                    response.getSuggestions().add(suggestion);
+                });
+        return response;
+    }
+
+    @RequestMapping(value = "/get-inventory-line", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public InventoryLine getInventoryLine(@RequestParam("clientId") Long clientId, @RequestParam("itemId") Long itemId) {
+        Item item = itemService.getById(itemId);
+        Client client = clientService.getById(clientId);
+
+        InventoryLine result = clientService.getInventoryLine(client, item);
+        if (result == null) {
+            result = new InventoryLine();
+            result.setClient(client);
+            result.setItem(item);
+            result.setQuantity(0);
+        }
+
+        return result;
+    }
 }

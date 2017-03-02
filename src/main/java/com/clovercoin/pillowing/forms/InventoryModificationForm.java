@@ -7,5 +7,6 @@ public class InventoryModificationForm {
     private Long itemId;
     private Long clientId;
     private Integer quantity;
+    private String itemName;
     private String note;
 }

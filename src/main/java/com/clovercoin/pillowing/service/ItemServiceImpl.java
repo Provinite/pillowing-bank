@@ -52,6 +52,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Page<Item> searchItemsByName(String name, Integer page) {
+        Pageable pageable = new PageRequest(page, defaultPageSize, defaultSort);
+        return itemRepository.findByNameContainsAndItemType(name, ItemType.ITEM, pageable);
+    }
+
+    @Override
+    public Page<Item> searchCurrenciesByName(String name, Integer page) {
+        Pageable pageable = new PageRequest(page, defaultPageSize, defaultSort);
+        return itemRepository.findByNameContainsAndItemType(name, ItemType.CURRENCY, pageable);
+    }
+
+    @Override
     public Page<Item> getCurrencyPage(Integer page) {
         Pageable pageable = new PageRequest(page, defaultPageSize, defaultSort);
         return itemRepository.findByItemType(ItemType.CURRENCY, pageable);

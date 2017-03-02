@@ -8,6 +8,7 @@ import com.clovercoin.pillowing.entity.Client;
 import com.clovercoin.pillowing.entity.InventoryLine;
 import com.clovercoin.pillowing.entity.Item;
 import com.clovercoin.pillowing.entity.User;
+import com.clovercoin.pillowing.forms.InventoryModificationForm;
 import com.clovercoin.pillowing.forms.UserAddForm;
 import com.clovercoin.pillowing.repository.InventoryLineRepository;
 import com.clovercoin.pillowing.service.ClientService;
@@ -67,7 +68,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = {"/client/{id}", "/client/{id}/inventory/{inventoryPage}/currency/{currencyPage}"}, method = RequestMethod.GET)
-    public Object viewClient(@PathVariable("id") Long id,
+    public String viewClient(@PathVariable("id") Long id,
                              @PathVariable("inventoryPage") Optional<Integer> requestedInventoryPage,
                              @PathVariable("currencyPage") Optional<Integer> requestedCurrencyPage,
                              Model model) {
@@ -85,6 +86,35 @@ public class AdminController {
         model.addAttribute("currencyPageNumber", currencyPage+1);
 
         return "admin/client/view-client";
+    }
+
+    @RequestMapping(value = "/client/{id}/add-item", method = RequestMethod.GET)
+    public String addItemToInventory(@PathVariable("id") Long id, Model model) {
+        Client client = clientService.getById(id);
+        InventoryModificationForm inventoryModificationForm = new InventoryModificationForm();
+        inventoryModificationForm.setClientId(client.getId());
+        model.addAttribute("form", inventoryModificationForm);
+        model.addAttribute("client", client);
+        return "admin/client/add-item";
+    }
+
+    @RequestMapping(value = "/client/{id}/add-item", method = RequestMethod.POST)
+    public String addItemToInventory(@PathVariable("id") Long clientId, InventoryModificationForm form, Model model) {
+        Client client = clientService.getById(form.getClientId());
+        Item item = itemService.getById(form.getItemId());
+        Integer quantity = form.getQuantity();
+        String note = form.getNote();
+
+        clientService.updateInventoryQuantity(client, item, quantity, note);
+        controllerHelper.setAction(model, Action.ADD_SUBMIT);
+        controllerHelper.setStatus(model, Status.SUCCESS);
+
+        form = new InventoryModificationForm();
+        form.setClientId(clientId);
+        model.addAttribute("form", form);
+        model.addAttribute("client", client);
+
+        return "admin/client/add-item";
     }
 
     @RequestMapping(value = "/foo", method = RequestMethod.GET)
