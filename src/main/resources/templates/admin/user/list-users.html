@@ -24,6 +24,9 @@
                     <th>
                         Roles
                     </th>
+                    <th>
+                        Access
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -34,6 +37,18 @@
                     <td>
                         <th:block th:each="role : ${user.roles}">
                             <th:block th:text="${#strings.capitalize(#strings.toLowerCase(role.role))}" /><th:block th:if="${!roleStat.last}">, </th:block>
+                        </th:block>
+                    </td>
+                    <td>
+                        <th:block th:if="${user.active == 0}">
+                            <a class="small button" th:href="@{/admin/user/{user}/enable-user(user=${user.id})}">
+                                <i class="fa fa-times"></i> Enable User
+                            </a>
+                        </th:block>
+                        <th:block th:if="${user.active == 1}">
+                            <a class="small button" th:href="@{/admin/user/{user}/disable-user(user=${user.id})}">
+                                <i class="fa fa-times"></i> Disable User
+                            </a>
                         </th:block>
                     </td>
                 </tr>

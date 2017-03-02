@@ -20,7 +20,7 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 
-@Service
+@Service("userService")
 @Log
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
@@ -137,5 +137,10 @@ public class UserServiceImpl implements UserService {
         UserDetails ud = (UserDetails)currentAuth.getPrincipal();
         String userEmail = ud.getUsername();
         return userRepository.findByEmail(userEmail);
+    }
+
+    @Override
+    public User getById(Long id) {
+        return userRepository.findOne(id);
     }
 }

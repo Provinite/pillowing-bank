@@ -14,4 +14,5 @@ public interface UserService {
     List<User> getAllUsers();
     Boolean userHasRole(User user, String role);
     User getCurrentUser();
+    User getById(Long id);
 }

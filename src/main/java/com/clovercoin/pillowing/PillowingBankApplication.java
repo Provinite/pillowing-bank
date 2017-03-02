@@ -11,16 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.util.Assert;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 import java.security.Security;
+import java.util.EventListener;
 import java.util.HashSet;
 
 @SpringBootApplication
@@ -82,14 +90,8 @@ public class PillowingBankApplication {
 	}
 
 	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		log.info("Configuring CORS");
-		return new WebMvcConfigurerAdapter() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**");
-			}
-		};
+	public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
+		return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
 	}
 
 	@Bean

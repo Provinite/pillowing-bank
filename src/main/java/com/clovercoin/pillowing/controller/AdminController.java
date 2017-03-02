@@ -11,16 +11,14 @@ import com.clovercoin.pillowing.entity.User;
 import com.clovercoin.pillowing.forms.InventoryModificationForm;
 import com.clovercoin.pillowing.forms.UserAddForm;
 import com.clovercoin.pillowing.repository.InventoryLineRepository;
-import com.clovercoin.pillowing.service.ClientService;
-import com.clovercoin.pillowing.service.ControllerHelper;
-import com.clovercoin.pillowing.service.ItemService;
-import com.clovercoin.pillowing.service.UserService;
+import com.clovercoin.pillowing.service.*;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +40,8 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private SecurityService securityService;
 
     @Autowired
     private InventoryLineRepository inventoryLineRepository;
@@ -192,6 +192,24 @@ public class AdminController {
         model.addAttribute("userForm", userAddForm);
 
         return "admin/user/add-user";
+    }
+
+    @PreAuthorize("!@userService.getById(#id).email.equals(principal.username)")
+    @RequestMapping(value = "/user/{id}/disable-user", method = RequestMethod.GET)
+    public String disableUser(@PathVariable("id") Long id) {
+        User user = userService.getById(id);
+        securityService.expireUserSessions(user);
+        user.setActive(0);
+        userService.saveUser(user, false);
+        return "redirect:/admin/users";
+    }
+
+    @RequestMapping(value = "/user/{id}/enable-user", method = RequestMethod.GET)
+    public String enableUser(@PathVariable("id") Long id) {
+        User user = userService.getById(id);
+        user.setActive(1);
+        userService.saveUser(user, false);
+        return "redirect:/admin/users";
     }
 
     @RequestMapping(value = "/user/add", method = RequestMethod.POST)
