@@ -11,8 +11,6 @@
         /*<![CDATA[*/
         var EVENT_FOUNDATION_REVEAL_CLOSE = "closed.zf.reveal";
 
-
-
         $(document).ready(function() {
             var inventoryForm = $("#inventoryChangeForm");
             var inventoryModal = $("#inventoryChangeModal");
@@ -128,7 +126,14 @@
 <th:block th:replace="partials/header :: topbar('Pillowing Bank - Client', true, 'client')" />
 <div class="row">
     <div class="small-7 column small-centered">
-        <p class="lead">Viewing details of [[${client.name}]]</p>
+        <p class="lead">Viewing inventory of <strong>[[${client.name}]]</strong></p>
+        <th:block th:if="${client.note ne null and client.note.length() gt 0}">
+            <div class="callout primary">
+                <p class="lead">This client has a staff note.</p>
+                <hr />
+                <p th:text="${client.note}"></p>
+            </div>
+        </th:block>
         <table th:if="${currencyPage.totalElements ne 0}" class="hover">
             <caption>Balances (Showing <th:block th:replace="partials/pagination :: showing(${currencyPage})" />)</caption>
             <thead>
@@ -163,6 +168,9 @@
                 </tr>
             </tbody>
         </table>
+        <div th:if="${currencyPage.totalElements eq 0}" class="callout warning">
+            Client has no currency records to display.
+        </div>
         <th:block th:if="${(currencyPage.totalElements ne 0) and (currencyPage.totalPages gt 1)}">
             <th:block
                     th:replace="partials/pagination :: pagination(${currencyPage}, 8,
@@ -206,10 +214,14 @@
                 </tr>
             </tbody>
         </table>
-        <th:block
-                th:replace="partials/pagination :: pagination(${inventoryPage}, 8,
-                    @{/admin/client/{client}/inventory/{page}/currency/{currency}(client=${client.id},currency=${currencyPageNumber})}
-                )" />
+        <th:block th:if="${inventoryPage.totalElements ne 0}">
+            <th:block
+                    th:replace="partials/pagination :: pagination(${inventoryPage}, 8,
+                        @{/admin/client/{client}/inventory/{page}/currency/{currency}(client=${client.id},currency=${currencyPageNumber})}
+                    )"
+            />
+        </th:block>
+
         <div th:if="${inventoryPage.totalElements eq 0}" class="callout warning">
             There is no inventory to display.
         </div>
