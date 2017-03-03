@@ -18,4 +18,11 @@ public class Item {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ItemType itemType;
+
+    @Column(unique = true)
+    private String normalizedName;
+
+    @PrePersist @PreUpdate private void prepare(){
+        this.normalizedName = (name == null) ? null : name.toLowerCase();
+    }
 }

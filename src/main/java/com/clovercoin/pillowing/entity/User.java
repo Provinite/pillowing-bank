@@ -32,4 +32,15 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @Column(unique = true)
+    private String normalizedUsername;
+
+    @Column(unique = true)
+    private String normalizedEmail;
+
+    @PrePersist @PreUpdate private void prepare() {
+        this.normalizedUsername = (username == null) ? null : username.toLowerCase();
+        this.normalizedEmail = (email == null) ? null : email.toLowerCase();
+    }
 }

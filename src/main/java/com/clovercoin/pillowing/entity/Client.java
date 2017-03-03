@@ -16,4 +16,11 @@ public class Client {
 
     @Column(length = 2048)
     private String note;
+
+    @Column(unique = true)
+    private String normalizedName;
+
+    @PrePersist @PreUpdate private void prepare(){
+        this.normalizedName = (name == null) ? null : name.toLowerCase();
+    }
 }
