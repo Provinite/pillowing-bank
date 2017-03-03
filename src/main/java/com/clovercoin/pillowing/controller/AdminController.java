@@ -21,10 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -90,10 +87,15 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/client/{id}/add-item", method = RequestMethod.GET)
-    public String addItemToInventory(@PathVariable("id") Long id, Model model) {
+    public String addItemToInventory(@PathVariable("id") Long id, @RequestParam(value = "type", defaultValue = "item") String type, Model model) {
         Client client = clientService.getById(id);
         InventoryModificationForm inventoryModificationForm = new InventoryModificationForm();
         inventoryModificationForm.setClientId(client.getId());
+        if (type.toLowerCase().equals("currency")) {
+            model.addAttribute("itemType", "currency");
+        } else {
+            model.addAttribute("itemType", "item");
+        }
         model.addAttribute("form", inventoryModificationForm);
         model.addAttribute("client", client);
         return "admin/client/add-item";

@@ -6,6 +6,12 @@
     <script type="text/javascript" th:inline="javascript">
         var rootUrl = /*[[@{/}]]*/ '/';
         var clientId = /*[[${client.id}]]*/ 0;
+        var itemType = /*[[${itemType}]]*/ "item";
+        if (itemType == "currency") {
+            itemType = "currencies";
+        } else if (itemType == "item") {
+            itemType = "items";
+        }
     </script>
     <script type="text/javascript">
         /*<![CDATA[*/
@@ -41,7 +47,7 @@
             var confirmed = false;
 
             itemInput.autocomplete({
-                serviceUrl: rootUrl + 'admin/ajax/search-items',
+                serviceUrl: rootUrl + 'admin/ajax/search-' + itemType,
                 paramName: 'name',
                 onSelect: function(suggestion) {
                     $(this).parent().find("i.fa").removeClass("fa-times").addClass("fa-check");
@@ -108,7 +114,7 @@
         <th:block th:if="${__${ACTION}__} eq ${@constantService.get('ACTION_ADD_SUBMIT')}">
 
             <div class="callout success" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_SUCCESS')}">
-                Inventory updated. <a class="button small" th:href="@{/admin/client/{id}(id=${client.id})}"><i class="fa fa-repeat"></i> Return to client inventory</a>
+                Inventory updated. <a class="button small inline secondary" th:href="@{/admin/client/{id}(id=${client.id})}"><i class="fa fa-repeat"></i> Return to inventory</a>
             </div>
 
             <div class="callout alert" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_FAILURE')}">

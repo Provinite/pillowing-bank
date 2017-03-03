@@ -103,6 +103,20 @@ public class AdminAjaxController {
         return response;
     }
 
+    @RequestMapping(value = "/search-currencies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public AutoCompleteResponse searchCurrencies(@RequestParam("name") String name) {
+        Page<Item> matchingCurrencies = itemService.searchCurrenciesByName(name, 0);
+        AutoCompleteResponse response = new AutoCompleteResponse();
+        matchingCurrencies.getContent()
+                .forEach(item -> {
+                    AutoCompleteSuggestion suggestion = new AutoCompleteSuggestion(item.getName());
+                    suggestion.getData().put("id", item.getId());
+                    response.getSuggestions().add(suggestion);
+                });
+        return response;
+    }
+
     @RequestMapping(value = "/search-users", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public AutoCompleteResponse searchUsers(@RequestParam("name") String name) {

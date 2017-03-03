@@ -128,7 +128,7 @@
     <div class="small-7 column small-centered">
         <p class="lead">
             Viewing inventory of <strong>[[${client.name}]]</strong>
-            <a class="tiny button inline" th:href="@{/admin/audit/client/{id}(id=${client.id})}"><i class="fa fa-arrow-right"></i> Audit Client</a>
+            <a class="tiny button inline secondary" th:href="@{/admin/audit/client/{id}(id=${client.id})}"><i class="fa fa-arrow-right"></i> Audit Client</a>
         </p>
         <th:block th:if="${client.note ne null and client.note.length() gt 0}">
             <div class="callout primary">
@@ -137,6 +137,9 @@
                 <p th:text="${client.note}"></p>
             </div>
         </th:block>
+        <a th:href="@{/admin/client/{client}/add-item?type=currency(client=${client.id})}" class="button small">
+            <i class="fa fa-plus"></i> Update Balances
+        </a>
         <table th:if="${currencyPage.totalElements ne 0}" class="hover">
             <caption>Balances (Showing <th:block th:replace="partials/pagination :: showing(${currencyPage})" />)</caption>
             <thead>
@@ -182,7 +185,7 @@
         </th:block>
 
         <hr />
-        <a th:href="@{/admin/client/{client}/add-item(client=${client.id})}" class="button">
+        <a th:href="@{/admin/client/{client}/add-item?type=item(client=${client.id})}" class="button small">
             <i class="fa fa-plus"></i> Update Inventory
         </a>
         <table th:if="${inventoryPage.totalElements ne 0}" class="hover">
