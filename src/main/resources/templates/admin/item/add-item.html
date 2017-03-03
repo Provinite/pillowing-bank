@@ -27,7 +27,7 @@
             </div>
 
         </th:block>
-        <form th:action="@{''}" th:object="${item}" method="post">
+        <form th:action="@{''}" th:object="${item}" method="post" autocomplete="off">
             <input type="hidden" th:field="*{itemType}" />
             <label for="itemName">Item Name</label>
             <input type="text"
