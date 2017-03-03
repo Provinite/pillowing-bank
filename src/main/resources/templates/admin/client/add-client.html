@@ -4,14 +4,32 @@
     <th:block th:replace="partials/header :: includes" />
     <title>Pillowing Bank - Add Client</title>
 </head>
-<body th:inline="text">
-<th:block th:replace="partials/header :: topbar('Pillowing Bank - Add Client', true, 'client')" />
+<body th:inline="text" th:with="action=
+    ${
+        __${ACTION}__ eq @constantService.get('ACTION_ADD') ? 'Add Client' :
+        __${ACTION}__ eq @constantService.get('ACTION_ADD_SUBMIT') ? 'Add Client' :
+        __${ACTION}__ eq @constantService.get('ACTION_EDIT') ? 'Edit Client' :
+        __${ACTION}__ eq @constantService.get('ACTION_EDIT_SUBMIT') ? 'Edit Client' : 'Add Client'
+        }">
+<th:block th:replace="partials/header :: topbar('Pillowing Bank - ' + ${action}, true, 'client')" />
 <div class="row">
     <div class="small-7 small-centered column">
-        <th:block th:if="${__${ACTION}__} eq ${@constantService.get('ACTION_ADD_SUBMIT')}">
+        <th:block th:if="${__${ACTION}__ eq @constantService.get('ACTION_ADD_SUBMIT')
+                        or __${ACTION}__ eq @constantService.get('ACTION_EDIT_SUBMIT')}">
 
-            <div class="callout success" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_SUCCESS')}">
+            <div class="callout success" th:if="${
+                        __${STATUS}__ eq @constantService.get('STATUS_SUCCESS')
+                    and __${ACTION}__ eq @constantService.get('ACTION_ADD_SUBMIT')}">
                 Successfully added client with name [[${client_name}]]!
+            </div>
+
+            <div class="callout success" th:if="${
+                        __${STATUS}__ eq @constantService.get('STATUS_SUCCESS')
+                    and __${ACTION}__ eq @constantService.get('ACTION_EDIT_SUBMIT')}">
+                Successfully edited client with name [[${client_name}]]!
+                <a class="button tiny inline secondary" th:href="@{/admin/client/{id}(id=${client.id})}">
+                    <i class="fa fa-arrow-right"></i> View Inventory
+                </a>
             </div>
 
             <div class="callout alert" th:if="${__${STATUS}__} eq ${@constantService.get('STATUS_FAILURE')}">
@@ -27,7 +45,7 @@
             </div>
 
         </th:block>
-        <form th:action="@{/admin/client/add}" th:object="${client}" method="post">
+        <form th:action="@{''}" th:object="${client}" method="post" autocomplete="off">
             <label for="clientName">Client Name</label>
             <input type="text"
                    id="clientName"
@@ -38,7 +56,7 @@
             <label for="clientNote">Client Note</label>
             <textarea id="clientNote" th:field="*{note}" placeholder="A private note about the client"></textarea>
 
-            <input type="submit" class="button expanded" value="Create Client" />
+            <input type="submit" class="button expanded" th:value="${action}" />
         </form>
     </div>
 </div>

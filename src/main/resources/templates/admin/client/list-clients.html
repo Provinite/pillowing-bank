@@ -56,11 +56,15 @@
                 <th>
                     Client
                 </th>
+                <th>
+                    Edit
+                </th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="client,iterationStatus : ${clientPage.content}">
                 <td><a th:text="${client.name}" th:href="@{/admin/client/{id}(id=${client.id})}"></a></td>
+                <td><a class="button tiny" th:href="@{/admin/client/{id}/edit(id=${client.id})}"><i class="fa fa-pencil"></i></a></td>
             </tr>
             </tbody>
         </table>

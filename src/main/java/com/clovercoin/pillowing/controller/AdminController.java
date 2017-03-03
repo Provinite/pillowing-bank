@@ -61,8 +61,62 @@ public class AdminController {
     @RequestMapping(value = "/client/add", method = RequestMethod.GET)
     public String addClient(Model model) {
         model.addAttribute("client", new Client());
-
+        controllerHelper.setAction(model, Action.ADD);
         return "admin/client/add-client";
+    }
+
+    @RequestMapping(value = "/client/add", method = RequestMethod.POST)
+    public String addClient(Client client, Model model) {
+        controllerHelper.setAction(model, Action.ADD_SUBMIT);
+        model.addAttribute("client_name", client.getName());
+
+        if (doClientSave(model, client)) {
+            client = new Client();
+        }
+
+        model.addAttribute("client", client);
+        return "admin/client/add-client";
+    }
+
+    @RequestMapping(value = "/client/{id}/edit", method = RequestMethod.GET)
+    public String editClient(@PathVariable("id") Long clientId, Model model) {
+        Client client = clientService.getById(clientId);
+        model.addAttribute("client", client);
+        controllerHelper.setAction(model, Action.EDIT);
+        return "admin/client/add-client";
+    }
+
+    @RequestMapping(value = "/client/{id}/edit", method = RequestMethod.POST)
+    public String editClient(@PathVariable("id") Long clientId, Client client, Model model) {
+        controllerHelper.setAction(model, Action.EDIT_SUBMIT);
+        model.addAttribute("client_name", client.getName());
+
+        Client existingClient = clientService.getById(clientId);
+        existingClient.setName(client.getName());
+        existingClient.setNote(client.getNote());
+
+        if (doClientSave(model, existingClient)) {
+            client = clientService.getById(clientId);
+        }
+
+        model.addAttribute("client", client);
+        return "admin/client/add-client";
+    }
+
+    private boolean doClientSave(Model model, Client client) {
+        try {
+            clientService.saveClient(client);
+            controllerHelper.setStatus(model, Status.SUCCESS);
+        } catch (DuplicateKeyException dke) {
+            controllerHelper.setStatus(model, Status.FAILURE);
+            controllerHelper.setError(model, ErrorCode.DUPLICATE_KEY);
+            return false;
+        } catch (Exception e) {
+            controllerHelper.setStatus(model, Status.FAILURE);
+            controllerHelper.setError(model, ErrorCode.UNKNOWN);
+            return false;
+        }
+        return true;
     }
 
     @RequestMapping(value = {"/client/{id}", "/client/{id}/inventory/{inventoryPage}/currency/{currencyPage}"}, method = RequestMethod.GET)
@@ -153,27 +207,6 @@ public class AdminController {
         }
 
         return inventoryLineRepository.findByClientAndItemItemType(client, ItemType.ITEM, new PageRequest(0, 20, Sort.Direction.ASC, "item.name"));
-    }
-
-    @RequestMapping(value = "/client/add", method = RequestMethod.POST)
-    public String addClient(Client client, Model model) {
-        controllerHelper.setAction(model, Action.ADD_SUBMIT);
-        model.addAttribute("client_name", client.getName());
-
-        try {
-            clientService.saveClient(client);
-            client = new Client();
-            controllerHelper.setStatus(model, Status.SUCCESS);
-        } catch (DuplicateKeyException dke) {
-            controllerHelper.setStatus(model, Status.FAILURE);
-            controllerHelper.setError(model, ErrorCode.DUPLICATE_KEY);
-        } catch (Exception e) {
-            controllerHelper.setStatus(model, Status.FAILURE);
-            controllerHelper.setError(model, ErrorCode.UNKNOWN);
-        }
-
-        model.addAttribute("client", client);
-        return "admin/client/add-client";
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
