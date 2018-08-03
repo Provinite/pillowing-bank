@@ -21,6 +21,12 @@
 .idea/**/gradle.xml
 .idea/**/libraries
 
+# VSCode
+.project
+.settings
+.vscode
+bin
+
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
 
