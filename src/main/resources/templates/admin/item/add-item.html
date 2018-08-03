@@ -29,7 +29,7 @@
         </th:block>
         <form th:action="@{''}" th:object="${item}" method="post" autocomplete="off">
             <input type="hidden" th:field="*{itemType}" />
-            <label for="itemName">Item Name</label>
+            <label for="itemName">[[${#strings.capitalizeWords(item.itemType.toString().toLowerCase())}]]</label>
             <input type="text"
                    id="itemName"
                    th:field="*{name}"

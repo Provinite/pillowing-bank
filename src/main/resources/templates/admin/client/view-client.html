@@ -127,7 +127,12 @@
 <div class="row">
     <div class="small-7 column small-centered">
         <p class="lead">
-            Viewing inventory of <strong>[[${client.name}]]</strong>
+            Viewing inventory of
+            <strong>
+                <a th:href="@{'https://www.deviantart.com/' + ${client.name}}" target="_blank">
+                    [[${client.name}]]
+                </a>
+            </strong>
             <a class="tiny button inline secondary" th:href="@{/admin/client/{id}/edit(id=${client.id})}">
                 <i class="fa fa-pencil"></i> Edit Client
             </a>
