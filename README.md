@@ -1,4 +1,4 @@
-# Pillowing Bank
+# Pillowing Bank v0.1.0
 
 A Spring WebMVC application to track inventories for the ~1,500 members of the Pillowing community managed by Clover Coin Designs.
 
