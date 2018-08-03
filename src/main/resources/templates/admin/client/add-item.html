@@ -136,7 +136,9 @@
                    th:value="${client.name}"
                    readonly="readonly" />
 
-            <label for="itemName">Item</label>
+            <label for="itemName">
+                [[${#strings.capitalize(itemType)}]]
+            </label>
             <div class="input-group">
                 <span class="input-group-label"><i class="fa fa-times"></i></span>
                 <input  type="text"
